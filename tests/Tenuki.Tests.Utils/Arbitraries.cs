@@ -1,5 +1,5 @@
-﻿using System.Globalization;
-using FsCheck.Fluent;
+﻿using FsCheck.Fluent;
+using System.Globalization;
 
 namespace Tenuki.Tests.Utils;
 

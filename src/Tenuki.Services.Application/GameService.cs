@@ -9,6 +9,7 @@ public sealed class GameService(
     IGameStateStore store,
     IGameStateTokenCodec tokens,
     IGamePresence presence,
+    IIdGenerator idGenerator,
     TimeProvider timeProvider
 )
 {
@@ -39,7 +40,11 @@ public sealed class GameService(
     )
     {
         cancellationToken.ThrowIfCancellationRequested();
-        var result = GameLogic.CreateGame(gameSettings, timeProvider.GetUtcNow());
+        var result = GameLogic.CreateGame(
+            GameId.NewId(idGenerator),
+            gameSettings,
+            timeProvider.GetUtcNow()
+        );
 
         if (result.TryGetValue(out var state))
         {

@@ -23,14 +23,14 @@ public sealed class RedisGameStateStoreTests(RedisFixture fixture) : IClassFixtu
     [Fact]
     public async Task GetAsync_Returns_Null_If_Game_Does_Not_Exist()
     {
-        var result = await Instance.GetAsync(new(), TestContext.Current.CancellationToken);
+        var result = await Instance.GetAsync(GameId.NewId(), TestContext.Current.CancellationToken);
         Assert.Null(result);
     }
 
     [Fact]
     public async Task GetAsync_Returns_State_Token_For_Created_Game()
     {
-        var expectedGame = new GameDescription(new(), "Hello World", 1);
+        var expectedGame = new GameDescription(GameId.NewId(), "Hello World", 1);
 
         Assert.True(
             await Instance.CreateAsync(expectedGame, TestContext.Current.CancellationToken)
@@ -46,7 +46,7 @@ public sealed class RedisGameStateStoreTests(RedisFixture fixture) : IClassFixtu
     [Fact]
     public async Task CreateAsync_Returns_False_If_Game_With_Id_Already_Exist()
     {
-        var gameId = new GameId();
+        var gameId = GameId.NewId();
 
         Assert.True(
             await Instance.CreateAsync(
@@ -66,7 +66,7 @@ public sealed class RedisGameStateStoreTests(RedisFixture fixture) : IClassFixtu
     public async Task UpdateAsync_Returns_NotFound_If_Game_Does_Not_Exist()
     {
         var result = await Instance.UpdateAsync(
-            new(new(), "", 0),
+            new(GameId.NewId(), "", 0),
             1,
             [],
             TestContext.Current.CancellationToken
@@ -77,7 +77,7 @@ public sealed class RedisGameStateStoreTests(RedisFixture fixture) : IClassFixtu
     [Fact]
     public async Task UpdateAsync_Returns_Updated_If_Game_Has_Expected_Revision()
     {
-        var gameId = new GameId();
+        var gameId = GameId.NewId();
         Assert.True(
             await Instance.CreateAsync(
                 new(gameId, "Hello World", 0),
@@ -97,7 +97,7 @@ public sealed class RedisGameStateStoreTests(RedisFixture fixture) : IClassFixtu
     [Fact]
     public async Task UpdateAsync_Returns_Conflict_If_Game_Does_Not_Have_Expected_Revision()
     {
-        var gameId = new GameId();
+        var gameId = GameId.NewId();
         const string stateToken = "Hello World";
         Assert.True(
             await Instance.CreateAsync(

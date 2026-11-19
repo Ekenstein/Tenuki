@@ -59,6 +59,7 @@ builder.Services.AddSingleton<IConnectionPresence, RedisConnectionPresence>();
 builder.Services.AddSingleton<ConnectionRegistry>();
 builder.Services.AddSingleton<ConnectionPresenceRefresher>();
 builder.Services.AddHostedService<ConnectionPresenceBackgroundService>();
+builder.Services.AddSingleton(IIdGenerator.Default);
 
 builder.Services.AddSingleton<IGamePresence, RedisGamePresence>();
 builder.Services.AddSingleton(RedisStreamSettings.Default);

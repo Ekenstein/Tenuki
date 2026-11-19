@@ -1,6 +1,6 @@
-﻿using System.Collections.Immutable;
-using FsCheck;
+﻿using FsCheck;
 using FsCheck.Fluent;
+using System.Collections.Immutable;
 using Tenuki.Commons;
 using Tenuki.Protocol;
 using Tenuki.Server.Messaging;

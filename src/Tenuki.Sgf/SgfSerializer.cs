@@ -1,5 +1,5 @@
-﻿using System.Text;
-using Pidgin;
+﻿using Pidgin;
+using System.Text;
 using static Pidgin.Parser;
 using static Pidgin.Parser<char>;
 

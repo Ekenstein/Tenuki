@@ -1,5 +1,5 @@
-﻿using System.Text.Json;
-using StackExchange.Redis;
+﻿using StackExchange.Redis;
+using System.Text.Json;
 using Tenuki.Server.Messaging;
 
 namespace Tenuki.Server.Redis;

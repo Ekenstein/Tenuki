@@ -1,6 +1,6 @@
-﻿using System.Collections.Immutable;
-using FsCheck;
+﻿using FsCheck;
 using FsCheck.Fluent;
+using System.Collections.Immutable;
 using Tenuki.Commons;
 using Tenuki.Protocol;
 using Tenuki.Services.Logic;
@@ -44,7 +44,7 @@ public static class Arbitraries
     private static GameState PlayMoves(IEnumerable<Point> points)
     {
         var now = DateTimeOffset.UnixEpoch;
-        var result = GameLogic.CreateGame(Commons.GameSettings.Default, now);
+        var result = GameLogic.CreateGame(GameId.NewId(), Commons.GameSettings.Default, now);
         var state = result.ValueOrThrow(_ => new InvalidOperationException(
             "Default game settings must be valid."
         ));
@@ -120,7 +120,7 @@ public static class Arbitraries
 
         let capturingPoint = new Point(x, y + 1)
         let now = DateTimeOffset.UnixEpoch
-        let initial = GameLogic.CreateGame(settings, now).ValueOrThrow()
+        let initial = GameLogic.CreateGame(GameId.NewId(), settings, now).ValueOrThrow()
 
         let stones = supportingStones
             .Zip(surroundingStones)

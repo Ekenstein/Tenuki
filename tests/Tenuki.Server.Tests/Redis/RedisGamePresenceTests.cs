@@ -13,7 +13,7 @@ public sealed class RedisGamePresenceTests(RedisFixture fixture) : IClassFixture
     public async Task A_Game_With_No_Active_Connections_Is_Not_Included_In_Live_Games()
     {
         var connectionId = ConnectionId();
-        var gameId = new GameId();
+        var gameId = GameId.NewId();
 
         var connectionPresence = new Mock<IConnectionPresence>()
             .Apply(x =>
@@ -37,7 +37,7 @@ public sealed class RedisGamePresenceTests(RedisFixture fixture) : IClassFixture
     public async Task A_Game_At_Least_One_Active_Connection_Is_Included_In_Live_Games()
     {
         var connectionId = ConnectionId();
-        var gameId = new GameId();
+        var gameId = GameId.NewId();
 
         var connectionPresence = new Mock<IConnectionPresence>()
             .Apply(x =>
@@ -58,7 +58,7 @@ public sealed class RedisGamePresenceTests(RedisFixture fixture) : IClassFixture
     public async Task A_Game_Where_All_Connections_Has_Left_The_Game_Is_Not_Included_In_Live_Games()
     {
         var connectionId = ConnectionId();
-        var gameId = new GameId();
+        var gameId = GameId.NewId();
 
         var connectionPresence = new Mock<IConnectionPresence>()
             .Apply(x =>

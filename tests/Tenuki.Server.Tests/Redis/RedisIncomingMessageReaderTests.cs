@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using Moq;
 using StackExchange.Redis;
+using Tenuki.Commons;
 using Tenuki.Protocol;
 using Tenuki.Server.Messaging;
 using Tenuki.Server.Redis;
@@ -28,7 +29,7 @@ public sealed class RedisIncomingMessageReaderTests(RedisFixture fixture)
             ConsumerGroup: $"tenuki:test:group:{Guid.NewGuid():N}"
         );
 
-        var message = new IncomingMessage.GameRemoved(new());
+        var message = new IncomingMessage.GameRemoved(GameId.NewId());
         var messageId = await db.QueueAsync(
             message,
             streamSettings,
@@ -146,7 +147,7 @@ public sealed class RedisIncomingMessageReaderTests(RedisFixture fixture)
         for (var i = 0; i < messageCount; i++)
         {
             var id = await db.QueueAsync(
-                new IncomingMessage.GameRemoved(new()),
+                new IncomingMessage.GameRemoved(GameId.NewId()),
                 streamSettings,
                 JsonUtils.DefaultOptions,
                 TestContext.Current.CancellationToken

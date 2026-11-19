@@ -5,7 +5,7 @@ namespace Tenuki.Services.Logic;
 
 public static class GameLogic
 {
-    public static Result<GameState> CreateGame(GameSettings settings, DateTimeOffset now)
+    public static Result<GameState> CreateGame(GameId id, GameSettings settings, DateTimeOffset now)
     {
         var validationErrors = settings.Validate();
         if (validationErrors.Any())
@@ -14,7 +14,7 @@ public static class GameLogic
         }
 
         var gameState = new GameState(
-            Id: new(),
+            Id: id,
             Revision: 1,
             Settings: settings,
             Clock: settings.TimeSettings.GetInitialClockState(now),
@@ -71,7 +71,7 @@ public static class GameLogic
         };
     }
 
-    private static GameCommandOutcome ResumePlay(GameState state, GameCommand.ResumePlay resumePlay)
+    private static GameCommandOutcome ResumePlay(GameState state, GameCommand.ResumePlay _)
     {
         if (state.Counting == null)
         {

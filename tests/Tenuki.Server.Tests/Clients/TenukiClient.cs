@@ -1,6 +1,6 @@
-﻿using System.Collections.Immutable;
+﻿using Microsoft.AspNetCore.SignalR.Client;
+using System.Collections.Immutable;
 using System.Threading.Channels;
-using Microsoft.AspNetCore.SignalR.Client;
 using Tenuki.Commons;
 using Tenuki.Protocol;
 using Tenuki.Server.SignalR;

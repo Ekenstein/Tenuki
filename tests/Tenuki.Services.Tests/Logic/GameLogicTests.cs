@@ -152,7 +152,7 @@ public sealed class GameLogicTests
     {
         var now = DateTimeOffset.UnixEpoch;
 
-        var result = GameLogic.CreateGame(GameSettings.Default, now);
+        var result = GameLogic.CreateGame(GameId.NewId(), GameSettings.Default, now);
 
         Assert.True(result.TryGetValue(out var state));
 

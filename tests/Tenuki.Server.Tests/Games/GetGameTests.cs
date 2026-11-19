@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using Tenuki.Commons;
 using Tenuki.Server.Models;
 using Tenuki.Server.Tests.Fixtures;
 using Tenuki.Tests.Utils;
@@ -12,7 +13,7 @@ public sealed class GetGameTests(ServerFixture fixture) : IClassFixture<ServerFi
     public async Task Get_Game_Returns_NotFound_If_Game_Does_Not_Exist()
     {
         using var response = await fixture.Games.GetGameAsync(
-            new(),
+            GameId.NewId(),
             TestContext.Current.CancellationToken
         );
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);

@@ -1,5 +1,5 @@
-﻿using System.Globalization;
-using StackExchange.Redis;
+﻿using StackExchange.Redis;
+using System.Globalization;
 using Tenuki.Commons;
 
 namespace Tenuki.Server.Redis;

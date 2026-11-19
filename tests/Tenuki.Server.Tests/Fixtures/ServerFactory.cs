@@ -1,11 +1,11 @@
-﻿using System.Collections.Immutable;
-using InMemoryEmulator.Redis;
+﻿using InMemoryEmulator.Redis;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using System.Collections.Immutable;
 
 namespace Tenuki.Server.Tests.Fixtures;
 

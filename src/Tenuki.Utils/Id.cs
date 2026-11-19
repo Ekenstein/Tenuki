@@ -8,6 +8,9 @@ public abstract record Id<TId>(Guid Value) : IParsable<TId>, IComparable<TId>
     public static TId Parse(string s, IFormatProvider? provider) =>
         CreateInstance(Guid.Parse(s, provider));
 
+    public static TId NewId(IIdGenerator? idGenerator = null) =>
+        CreateInstance(idGenerator?.Generate() ?? IIdGenerator.Default.Generate());
+
     public static bool TryParse(
         string? s,
         IFormatProvider? provider,
