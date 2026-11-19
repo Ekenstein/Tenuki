@@ -3,6 +3,7 @@ using System.Threading.Channels;
 using Microsoft.AspNetCore.SignalR.Client;
 using Tenuki.Commons;
 using Tenuki.Protocol;
+using Tenuki.Server.SignalR;
 using Xunit;
 
 namespace Tenuki.Server.Tests.Clients;

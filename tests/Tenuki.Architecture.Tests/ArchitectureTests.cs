@@ -1,7 +1,7 @@
 ﻿using ArchUnitNET.Fluent.Slices;
 using ArchUnitNET.xUnitV3;
 using Tenuki.Protocol;
-using Tenuki.Server;
+using Tenuki.Server.SignalR;
 using Xunit;
 using static ArchUnitNET.Fluent.ArchRuleDefinition;
 

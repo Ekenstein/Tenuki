@@ -4,7 +4,7 @@ using Tenuki.Protocol;
 using Tenuki.Server.Messaging;
 using Tenuki.Services.Application;
 
-namespace Tenuki.Server;
+namespace Tenuki.Server.SignalR;
 
 public sealed class GameChannel(
     IHubContext<TenukiHub, ITenukiClient> hubContext,

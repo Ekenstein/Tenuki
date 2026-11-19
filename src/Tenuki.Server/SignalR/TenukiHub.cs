@@ -2,7 +2,7 @@
 using Tenuki.Commons;
 using Tenuki.Protocol;
 
-namespace Tenuki.Server;
+namespace Tenuki.Server.SignalR;
 
 public sealed class TenukiHub(
     ConnectionRegistry connectionRegistry,

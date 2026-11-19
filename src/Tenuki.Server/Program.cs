@@ -6,6 +6,7 @@ using Tenuki.Server.Messaging;
 using Tenuki.Server.Options;
 using Tenuki.Server.Redis;
 using Tenuki.Server.Routes;
+using Tenuki.Server.SignalR;
 using Tenuki.Services.Application;
 
 var builder = WebApplication.CreateBuilder(args);

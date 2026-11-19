@@ -1,4 +1,6 @@
-﻿namespace Tenuki.Server.Routes;
+﻿using Tenuki.Server.SignalR;
+
+namespace Tenuki.Server.Routes;
 
 public static class AllRoutes
 {

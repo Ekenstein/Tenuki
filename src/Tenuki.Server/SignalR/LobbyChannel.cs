@@ -2,7 +2,7 @@
 using Tenuki.Protocol;
 using Tenuki.Server.Messaging;
 
-namespace Tenuki.Server;
+namespace Tenuki.Server.SignalR;
 
 public sealed class LobbyChannel(IHubContext<TenukiHub, ITenukiClient> hubContext)
     : IMessageBroadcaster<LobbyMessage>
