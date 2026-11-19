@@ -3,6 +3,7 @@
     <TargetFramework>net11.0</TargetFramework>
     <LangVersion>15</LangVersion>
     <Nullable>enable</Nullable>
+    <WarningsAsErrors>$(WarningsAsErrors);CS8509;CS8524;CS8846</WarningsAsErrors>
   </PropertyGroup>
   <ItemGroup Condition="'$(MSBuildProjectName)' != 'Tenuki.AppHost'">
     <Using Include="Tenuki.Utils" />
