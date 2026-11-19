@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="TngTech.ArchUnitNET.xUnitV3" Version="0.13.4" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="4.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="xunit.v3" Version="4.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Tenuki.Commons\Tenuki.Commons.csproj" />
+    <ProjectReference Include="..\..\src\Tenuki.Protocol\Tenuki.Protocol.csproj" />
+    <ProjectReference Include="..\..\src\Tenuki.Server\Tenuki.Server.csproj" />
+    <ProjectReference Include="..\..\src\Tenuki.Services.Application\Tenuki.Services.Application.csproj" />
+    <ProjectReference Include="..\..\src\Tenuki.Services.Logic\Tenuki.Services.Logic.csproj" />
+    <ProjectReference Include="..\..\src\Tenuki.Sgf\Tenuki.Sgf.csproj" />
+    <ProjectReference Include="..\..\src\Tenuki.Utils\Tenuki.Utils.csproj" />
+  </ItemGroup>
+</Project>

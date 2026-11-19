@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Tenuki.Server.Tests" />
+    <InternalsVisibleTo Include="Tenuki.Services.Tests" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Tenuki.Commons\Tenuki.Commons.csproj" />
+    <ProjectReference Include="..\Tenuki.Protocol\Tenuki.Protocol.csproj" />
+    <ProjectReference Include="..\Tenuki.Services.Logic\Tenuki.Services.Logic.csproj" />
+    <ProjectReference Include="..\Tenuki.Sgf\Tenuki.Sgf.csproj" />
+  </ItemGroup>
+</Project>

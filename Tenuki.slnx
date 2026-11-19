@@ -1,0 +1,50 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project
+      Path="src/Tenuki.AppHost/Tenuki.AppHost.csproj"
+      Id="61ffe2ab-986b-450a-9c3a-df253dd9e259"
+    />
+    <Project Path="src/Tenuki.Commons/Tenuki.Commons.csproj" />
+    <Project Path="src/Tenuki.Protocol/Tenuki.Protocol.csproj" />
+    <Project Path="src/Tenuki.Server/Tenuki.Server.csproj" />
+    <Project
+      Path="src/Tenuki.Services.Logic/Tenuki.Services.Logic.csproj"
+      Id="221af801-2da5-40e6-a45a-2d29c6a9fc01"
+    />
+    <Project
+      Path="src/Tenuki.Services.Application/Tenuki.Services.Application.csproj"
+      Id="ff974646-6a44-439b-a4cd-99f7cf669443"
+    />
+    <Project Path="src/Tenuki.Sgf/Tenuki.Sgf.csproj" Id="cef1f824-2a38-48ec-baa0-8d5d1dcb9af5" />
+    <Project
+      Path="src/Tenuki.Utils/Tenuki.Utils.csproj"
+      Id="18058a7f-3dd6-41d6-9663-7367f685d67e"
+    />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project
+      Path="tests/Tenuki.Architecture.Tests/Tenuki.Architecture.Tests.csproj"
+      Id="8fb333ec-6038-4cf8-906c-ae702ecfd96c"
+    />
+    <Project
+      Path="tests/Tenuki.Server.Tests/Tenuki.Server.Tests.csproj"
+      Id="a11e17fd-bb65-432e-9dee-7b2b795a9574"
+    />
+    <Project
+      Path="tests/Tenuki.Services.Tests/Tenuki.Services.Tests.csproj"
+      Id="40cbe3b5-2c51-4eab-bee3-1937c7684d9e"
+    />
+    <Project
+      Path="tests/Tenuki.Sgf.Tests/Tenuki.Sgf.Tests.csproj"
+      Id="1f8bbbda-b296-4b71-9cc4-eda244ea12b1"
+    />
+    <Project
+      Path="tests/Tenuki.Tests.Utils/Tenuki.Tests.Utils.csproj"
+      Id="adf7fce7-118f-4118-b06b-4642a44d5b7f"
+    />
+    <Project
+      Path="tests/Tenuki.Utils.Tests/Tenuki.Utils.Tests.csproj"
+      Id="fdb9e2a8-2e58-44e6-84a9-b285aa39559e"
+    />
+  </Folder>
+</Solution>

@@ -1,0 +1,6 @@
+@Tenuki.Server_HostAddress = http://localhost:5267
+
+GET {{Tenuki.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

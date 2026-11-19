@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Pidgin" Version="3.5.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Tenuki.Utils\Tenuki.Utils.csproj" />
+  </ItemGroup>
+</Project>
