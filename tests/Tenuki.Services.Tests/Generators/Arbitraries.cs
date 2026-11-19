@@ -49,19 +49,16 @@ public static class Arbitraries
             "Default game settings must be valid."
         ));
 
-        return points.Aggregate(
-            state,
-            (state, point) =>
+        return points.Aggregate(state, (state, point) =>
+        {
+            var command = new GameCommand.Stone(new(), state.NextPlayer, point);
+            var outcome = GameLogic.ApplyGameCommand(state, command, now);
+            if (outcome is GameCommandOutcome.Applied applied)
             {
-                var command = new GameCommand.Stone(new(), state.NextPlayer, point);
-                var outcome = GameLogic.ApplyGameCommand(state, command, now);
-                if (outcome is GameCommandOutcome.Applied applied)
-                {
-                    return outcome.State;
-                }
-                return state;
+                return outcome.State;
             }
-        );
+            return state;
+        });
     }
 
     private static Gen<Point> LegalPointGen(GameState state)

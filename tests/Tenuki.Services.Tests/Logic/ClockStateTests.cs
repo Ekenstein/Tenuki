@@ -125,26 +125,23 @@ public class ClockStateTests
     [Property]
     public Property CrossingPeriodBoundaryResetsPeriodTime()
     {
-        return Prop.ForAll(
-            PeriodTransitionGen.ToArbitrary(),
-            values =>
-            {
-                var settings = new TimeSettings.ByoYomi(300, 3, values.PeriodSeconds * 1000L);
+        return Prop.ForAll(PeriodTransitionGen.ToArbitrary(), values =>
+        {
+            var settings = new TimeSettings.ByoYomi(300, 3, values.PeriodSeconds * 1000L);
 
-                var clock = new PlayerClock(
-                    MainTimeRemainingMs: 0,
-                    RemainingPeriods: 3,
-                    PeriodTimeRemainingMs: values.Remaining
-                );
+            var clock = new PlayerClock(
+                MainTimeRemainingMs: 0,
+                RemainingPeriods: 3,
+                PeriodTimeRemainingMs: values.Remaining
+            );
 
-                var updated = clock.UpdateClock(settings, values.Elapsed);
+            var updated = clock.UpdateClock(settings, values.Elapsed);
 
-                var expectedRemaining =
-                    values.PeriodSeconds * 1000L - (values.Elapsed - values.Remaining);
+            var expectedRemaining =
+                values.PeriodSeconds * 1000L - (values.Elapsed - values.Remaining);
 
-                return updated.RemainingPeriods == 2
-                    && updated.PeriodTimeRemainingMs == expectedRemaining;
-            }
-        );
+            return updated.RemainingPeriods == 2
+                && updated.PeriodTimeRemainingMs == expectedRemaining;
+        });
     }
 }

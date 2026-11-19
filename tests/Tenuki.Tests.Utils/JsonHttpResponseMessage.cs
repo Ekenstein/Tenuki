@@ -8,9 +8,9 @@ public sealed class JsonHttpResponseMessage<T>(HttpResponseMessage response) : I
         async cancellationToken =>
         {
             return await response.Content.ReadFromJsonAsync<T>(
-                    JsonUtils.DefaultOptions,
-                    cancellationToken
-                )
+                JsonUtils.DefaultOptions,
+                cancellationToken
+            )
                 ?? throw new InvalidOperationException(
                     $"Failed to deserialize the http response message to '{typeof(T).Name}'"
                 );
@@ -21,9 +21,9 @@ public sealed class JsonHttpResponseMessage<T>(HttpResponseMessage response) : I
         async cancellationToken =>
         {
             return await response.Content.ReadFromJsonAsync<IEnumerable<Error>>(
-                    JsonUtils.DefaultOptions,
-                    cancellationToken
-                )
+                JsonUtils.DefaultOptions,
+                cancellationToken
+            )
                 ?? throw new InvalidOperationException(
                     $"Failed to deserialize the http response message to '{typeof(IEnumerable<Error>).Name}'"
                 );

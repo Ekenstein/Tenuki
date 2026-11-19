@@ -47,14 +47,11 @@ public sealed class GameSettingsTests
         Assert.Equal(new Point(3, 3), settings.Tengen);
         Assert.DoesNotContain(new Point(3, 3), points);
 
-        Assert.All(
-            points,
-            point =>
-            {
-                Assert.InRange(point.X, 0, 6);
-                Assert.InRange(point.Y, 0, 6);
-            }
-        );
+        Assert.All(points, point =>
+        {
+            Assert.InRange(point.X, 0, 6);
+            Assert.InRange(point.Y, 0, 6);
+        });
     }
 
     [Property]

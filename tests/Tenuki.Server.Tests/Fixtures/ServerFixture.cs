@@ -42,15 +42,11 @@ public sealed class ServerFixture : IAsyncDisposable
             .AddJsonProtocol(options =>
                 JsonUtils.ConfigureOptions(options.PayloadSerializerOptions)
             )
-            .WithUrl(
-                uri,
-                transport =>
-                {
-                    transport.Transports = HttpTransportType.LongPolling;
-                    transport.HttpMessageHandlerFactory = _ =>
-                        _serverFactory.Server.CreateHandler();
-                }
-            )
+            .WithUrl(uri, transport =>
+            {
+                transport.Transports = HttpTransportType.LongPolling;
+                transport.HttpMessageHandlerFactory = _ => _serverFactory.Server.CreateHandler();
+            })
             .Build();
 
         return new TenukiClient(connection);

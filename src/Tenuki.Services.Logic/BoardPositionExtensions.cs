@@ -92,14 +92,12 @@ internal static class BoardPositionExtensions
         }
 
         public BoardPosition AddStones(IEnumerable<Stone> stones) =>
-            stones.Aggregate(
-                board,
-                (board, stone) =>
-                    board with
-                    {
-                        Position = board.Position.Add(stone),
-                        Hash = board.Hash ^ Zobrist.Hash(stone),
-                    }
+            stones.Aggregate(board, (board, stone) =>
+                board with
+                {
+                    Position = board.Position.Add(stone),
+                    Hash = board.Hash ^ Zobrist.Hash(stone),
+                }
             );
 
         public BoardPosition RemoveStones(IEnumerable<Point> points)

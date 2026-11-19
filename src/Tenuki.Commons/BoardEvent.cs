@@ -6,5 +6,6 @@ namespace Tenuki.Commons;
 public closed record BoardEvent(PlayerColor Color)
 {
     public sealed record Stone(PlayerColor Color, Point Point) : BoardEvent(Color);
+
     public sealed record Pass(PlayerColor Color) : BoardEvent(Color);
 }

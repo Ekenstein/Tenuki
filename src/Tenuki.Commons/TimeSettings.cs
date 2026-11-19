@@ -6,5 +6,7 @@ namespace Tenuki.Commons;
 public closed record class TimeSettings(long MainTimeMs)
 {
     public sealed record class Fixed(long MainTimeMs) : TimeSettings(MainTimeMs);
-    public sealed record class ByoYomi(long MainTimeMs, int Periods, long PeriodTimeMs) : TimeSettings(MainTimeMs);
+
+    public sealed record class ByoYomi(long MainTimeMs, int Periods, long PeriodTimeMs)
+        : TimeSettings(MainTimeMs);
 }

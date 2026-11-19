@@ -7,7 +7,10 @@ namespace Tenuki.Services.Application;
 public closed record GameStateUpdateOutcome
 {
     public sealed record Updated : GameStateUpdateOutcome;
-    public sealed record Conflict(string CurrentStateToken, long CurrentRevision) : GameStateUpdateOutcome;
+
+    public sealed record Conflict(string CurrentStateToken, long CurrentRevision)
+        : GameStateUpdateOutcome;
+
     public sealed record NotFound : GameStateUpdateOutcome;
 }
 

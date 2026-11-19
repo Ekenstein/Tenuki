@@ -12,15 +12,12 @@ public static class Arbitraries
         .Let(arb =>
         {
             var gen = arb.Generator.Select(n => n.ToString(CultureInfo.InvariantCulture));
-            return Arb.From(
-                gen,
-                value =>
-                {
-                    var n = Convert.ToInt32(value, CultureInfo.InvariantCulture);
-                    var values = arb.Shrinker(n);
-                    return values.Select(x => x.ToString(CultureInfo.InvariantCulture));
-                }
-            );
+            return Arb.From(gen, value =>
+            {
+                var n = Convert.ToInt32(value, CultureInfo.InvariantCulture);
+                var values = arb.Shrinker(n);
+                return values.Select(x => x.ToString(CultureInfo.InvariantCulture));
+            });
         });
 
     public static readonly Arbitrary<string> RealNumberString = ArbMap
@@ -28,15 +25,12 @@ public static class Arbitraries
         .Let(arb =>
         {
             var gen = arb.Generator.Select(n => n.ToString(CultureInfo.InvariantCulture));
-            return Arb.From(
-                gen,
-                value =>
-                {
-                    var n = Convert.ToDecimal(value, CultureInfo.InvariantCulture);
-                    var values = arb.Shrinker(n);
-                    return values.Select(x => x.ToString(CultureInfo.InvariantCulture));
-                }
-            );
+            return Arb.From(gen, value =>
+            {
+                var n = Convert.ToDecimal(value, CultureInfo.InvariantCulture);
+                var values = arb.Shrinker(n);
+                return values.Select(x => x.ToString(CultureInfo.InvariantCulture));
+            });
         });
 
     public static Arbitrary<DifferentStrings> DifferentStrings()

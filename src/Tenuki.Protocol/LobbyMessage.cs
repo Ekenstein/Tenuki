@@ -8,5 +8,6 @@ namespace Tenuki.Protocol;
 public closed record LobbyMessage
 {
     public sealed record GamesAdded(ImmutableList<GameDescription> Games) : LobbyMessage();
+
     public sealed record GamesRemoved(ImmutableList<GameId> GameIds) : LobbyMessage();
 }

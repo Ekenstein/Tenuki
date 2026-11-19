@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Tenuki.Commons;
+﻿using Tenuki.Commons;
 
 namespace Tenuki.Services.Tests.Generators;
 

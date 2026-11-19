@@ -8,10 +8,10 @@ namespace Tenuki.Protocol;
 public closed record GameMessage(GameId GameId)
 {
     public sealed record StateUpdated(
-        GameId GameId, 
+        GameId GameId,
         string StateToken,
         long PreviousRevision,
-        long Revision, 
+        long Revision,
         ImmutableList<GameCommand> CommittedCommands
     ) : GameMessage(GameId);
 }

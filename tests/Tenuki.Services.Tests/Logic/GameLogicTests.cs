@@ -26,9 +26,8 @@ public sealed class GameLogicTests
 
         var applied = Assert.IsType<GameCommandOutcome.Applied>(outcome);
 
-        Assert.Contains(
-            applied.State.CurrentBoard.Position,
-            stone => stone.Point == scenario.Command.Point && stone.Color == scenario.Command.Color
+        Assert.Contains(applied.State.CurrentBoard.Position, stone =>
+            stone.Point == scenario.Command.Point && stone.Color == scenario.Command.Color
         );
     }
 
@@ -175,14 +174,11 @@ public sealed class GameLogicTests
 
         var size = scenario.State.Settings.BoardSize;
 
-        Assert.All(
-            applied.State.CurrentBoard.Position,
-            stone =>
-            {
-                Assert.InRange(stone.Point.X, 0, size - 1);
-                Assert.InRange(stone.Point.Y, 0, size - 1);
-            }
-        );
+        Assert.All(applied.State.CurrentBoard.Position, stone =>
+        {
+            Assert.InRange(stone.Point.X, 0, size - 1);
+            Assert.InRange(stone.Point.Y, 0, size - 1);
+        });
     }
 
     [Property(Arbitrary = [typeof(Arbitraries)])]

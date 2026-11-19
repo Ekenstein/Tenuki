@@ -9,9 +9,11 @@ namespace Tenuki.Server.Messaging;
 public closed record IncomingMessage
 {
     public sealed record GameAdded(GameDescription Game) : IncomingMessage;
+
     public sealed record GameRemoved(GameId GameId) : IncomingMessage;
+
     public sealed record GameChanged(
-        GameDescription Game, 
+        GameDescription Game,
         ImmutableList<GameCommand> CommittedCommands
     ) : IncomingMessage;
 }
