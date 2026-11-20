@@ -6,7 +6,7 @@
     <InternalsVisibleTo Include="Tenuki.Server.Tests" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="StackExchange.Redis" Version="3.4.0" />
+    <PackageReference Include="StackExchange.Redis" Version="3.4.35" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tenuki.Protocol\Tenuki.Protocol.csproj" />

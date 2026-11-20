@@ -244,6 +244,7 @@ public sealed class PostGameCommandTests(ServerFixture fixture) : IClassFixture<
         var receivedMessage =
             await client1.GameMessages.WaitForMessageAsync<GameMessage.StateUpdated>(
                 x => x.GameId == game.Id && x.StateToken == outcome.StateToken,
+                TimeSpan.FromSeconds(5),
                 TestContext.Current.CancellationToken
             );
 
@@ -290,6 +291,7 @@ public sealed class PostGameCommandTests(ServerFixture fixture) : IClassFixture<
         var receivedMessage =
             await client.GameMessages.WaitForMessageAsync<GameMessage.StateUpdated>(
                 x => x.GameId == game.Id && x.StateToken == stateToken,
+                TimeSpan.FromSeconds(5),
                 TestContext.Current.CancellationToken
             );
 

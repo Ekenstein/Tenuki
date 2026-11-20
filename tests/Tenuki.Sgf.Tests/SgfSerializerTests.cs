@@ -1,5 +1,5 @@
-﻿using FsCheck.Xunit;
-using System.Text.Json;
+﻿using System.Text.Json;
+using FsCheck.Xunit;
 using Xunit;
 
 namespace Tenuki.Sgf.Tests;

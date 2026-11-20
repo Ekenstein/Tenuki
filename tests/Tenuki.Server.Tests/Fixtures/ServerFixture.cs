@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Time.Testing;
 using Tenuki.Commons;
+using Tenuki.Server.BackgroundServices;
 using Tenuki.Server.Options;
 using Tenuki.Server.Redis;
 using Tenuki.Server.Tests.Clients;
@@ -19,8 +21,8 @@ public sealed class ServerFixture : IAsyncDisposable
 
     public GameClient Games { get; }
     public FakeTimeProvider TimeProvider { get; } = new FakeTimeProvider();
-    public ConnectionPresenceOptions ConnectionPresenceOptions =>
-        _serverFactory.Services.GetRequiredService<IOptions<ConnectionPresenceOptions>>().Value;
+    public GameNotificationOptions GameNotificationOptions =>
+        _serverFactory.Services.GetRequiredService<IOptions<GameNotificationOptions>>().Value;
 
     public ServerFixture()
     {
@@ -51,6 +53,28 @@ public sealed class ServerFixture : IAsyncDisposable
 
         return new TenukiClient(connection);
     }
+
+    public Task WaitForBackgroundServiceToStartAsync<T>(CancellationToken cancellationToken)
+        where T : TimedBackgroundService =>
+        GetTimedBackgroundService<T>().WaitForTimerToStartAsync(cancellationToken);
+
+    public async Task AdvanceBackgroundServiceAsync<T>(
+        long tick,
+        CancellationToken cancellationToken
+    )
+        where T : TimedBackgroundService
+    {
+        var service = GetTimedBackgroundService<T>();
+        TimeProvider.Advance(service.Period);
+        await service.WaitForTickAsync(tick, cancellationToken);
+    }
+
+    private T GetTimedBackgroundService<T>()
+        where T : TimedBackgroundService =>
+        _serverFactory.Services.GetServices<IHostedService>().OfType<T>().SingleOrDefault()
+        ?? throw new InvalidOperationException(
+            $"There's no hosted service of type '{typeof(T).Name}'."
+        );
 
     public async Task ProcessIncomingMessagesAsync(CancellationToken cancellationToken)
     {

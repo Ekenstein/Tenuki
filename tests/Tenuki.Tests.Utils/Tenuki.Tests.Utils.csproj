@@ -6,9 +6,9 @@
     <ProjectReference Include="..\..\src\Tenuki.Utils\Tenuki.Utils.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FsCheck" Version="3.4.0" />
+    <PackageReference Include="FsCheck" Version="3.6.0" />
     <PackageReference Include="Moq" Version="4.21.0" />
-    <PackageReference Include="xunit.v3.assert" Version="4.0.2" />
+    <PackageReference Include="xunit.v3.assert" Version="4.0.3" />
   </ItemGroup>
   <ItemGroup>
     <Using Include="FsCheck" />

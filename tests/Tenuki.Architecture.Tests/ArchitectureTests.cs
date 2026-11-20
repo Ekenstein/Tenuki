@@ -9,9 +9,6 @@ namespace Tenuki.Architecture.Tests;
 
 public sealed partial class ArchitectureTests
 {
-    private const string FunctionalCore = "Tenuki.Services.Logic";
-    private const string ImperativeShell = "Tenuki.Services.Application";
-
     [Fact]
     public void No_Cycles_Allowed() =>
         SliceRuleDefinition

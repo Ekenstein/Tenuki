@@ -12,6 +12,7 @@ public sealed class ConnectionPresenceRefresher(
         cancellationToken.ThrowIfCancellationRequested();
         foreach (var connectionId in connectionRegistry.GetAllConnections())
         {
+            cancellationToken.ThrowIfCancellationRequested();
             await connectionPresence.RefreshAsync(connectionId, cancellationToken);
         }
     }

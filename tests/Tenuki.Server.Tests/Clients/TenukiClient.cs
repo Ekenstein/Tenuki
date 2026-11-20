@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Channels;
+using Microsoft.AspNetCore.SignalR.Client;
 using Tenuki.Commons;
 using Tenuki.Protocol;
 using Tenuki.Server.SignalR;
@@ -54,8 +55,6 @@ public sealed class TenukiClient : IAsyncDisposable
 public sealed class ReceivedMessages<T>
     where T : class
 {
-    private readonly SemaphoreSlim _lock = new(1);
-    private readonly List<T> _messages = [];
     private readonly Channel<T> _channel = Channel.CreateUnbounded<T>(
         new UnboundedChannelOptions { SingleReader = true, SingleWriter = false }
     );
@@ -65,14 +64,18 @@ public sealed class ReceivedMessages<T>
         return _channel.Writer.WriteAsync(message, TestContext.Current.CancellationToken);
     }
 
+    public bool TryRead([MaybeNullWhen(false)] out T message) =>
+        _channel.Reader.TryRead(out message);
+
     public async Task<ReceivedMessage<T, U>?> WaitForMessageAsync<U>(
         Predicate<U> predicate,
+        TimeSpan cancelAfter,
         CancellationToken cancellationToken
     )
         where U : class, T
     {
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        timeout.CancelAfter(TimeSpan.FromSeconds(5));
+        timeout.CancelAfter(cancelAfter);
 
         var prefix = ImmutableList.CreateBuilder<T>();
 

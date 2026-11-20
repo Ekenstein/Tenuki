@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Http.Json;
+﻿using System.Collections.Immutable;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
-using System.Collections.Immutable;
 using Tenuki.Server.Messaging;
 
 namespace Tenuki.Server.Redis;

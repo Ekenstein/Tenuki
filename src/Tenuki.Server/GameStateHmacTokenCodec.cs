@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Http.Json;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Options;
-using System.Text.Json;
 using Tenuki.Commons;
 using Tenuki.Services.Application;
 
@@ -14,10 +14,10 @@ public sealed class GameStateHmacTokenCodec(
     public Result<GameState> Decode(string token)
     {
         return from payload in HmacTokenCodec.Decode(token, hmacTokenOptions.Value.Secret)
-               select JsonSerializer.Deserialize<GameState>(
-                   payload,
-                   jsonOptions.Value.SerializerOptions
-               ) ?? throw new InvalidOperationException("Failed to deserialize the game state.");
+            select JsonSerializer.Deserialize<GameState>(
+                payload,
+                jsonOptions.Value.SerializerOptions
+            ) ?? throw new InvalidOperationException("Failed to deserialize the game state.");
     }
 
     public string Encode(GameState state)

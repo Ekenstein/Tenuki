@@ -1,6 +1,6 @@
-﻿using StackExchange.Redis;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Runtime.CompilerServices;
+using StackExchange.Redis;
 using Tenuki.Commons;
 using Tenuki.Services.Application;
 

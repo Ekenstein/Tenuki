@@ -1,5 +1,5 @@
-﻿using Medallion.Collections;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
+using Medallion.Collections;
 
 namespace Tenuki.Utils;
 

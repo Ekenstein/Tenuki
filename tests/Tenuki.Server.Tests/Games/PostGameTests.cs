@@ -23,6 +23,7 @@ public sealed class PostGameTests(ServerFixture fixture) : IClassFixture<ServerF
 
         var lobbyMessage = await client.LobbyMessages.WaitForMessageAsync<LobbyMessage.GamesAdded>(
             message => message.Games.Contains(game),
+            TimeSpan.FromSeconds(5),
             TestContext.Current.CancellationToken
         );
 
