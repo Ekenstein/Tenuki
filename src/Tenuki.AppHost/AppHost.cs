@@ -5,7 +5,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 var redis = builder.AddRedis("redis").WithDataVolume("tenuki-redis-data");
 
 var server = builder
-    .AddProject<Tenuki_Server>("server")
+    .AddDotnetProject("server", "../Tenuki.Server/Tenuki.Server.csproj")
     .WithEnvironment(async context =>
     {
         var connectionString = redis.Resource.GetConnectionStringAsync(context.CancellationToken);
