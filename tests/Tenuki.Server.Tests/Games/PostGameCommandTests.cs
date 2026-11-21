@@ -6,7 +6,7 @@ using Tenuki.Protocol;
 using Tenuki.Server.Models;
 using Tenuki.Server.Tests.Fixtures;
 using Tenuki.Services.Application;
-using Tenuki.Services.Logic;
+using Tenuki.Services.Logic.Game;
 using Tenuki.Tests.Utils;
 using Xunit;
 

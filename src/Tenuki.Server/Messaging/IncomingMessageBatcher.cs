@@ -5,7 +5,7 @@ namespace Tenuki.Server.Messaging;
 public static class IncomingMessageBatcher
 {
     public static IEnumerable<OutgoingMessage<TId>> Batch<TId>(
-        this IEnumerable<ReceivedMessage<TId, IncomingMessage>> receivedMessages
+        this IEnumerable<MessageEnvelope<TId, IncomingMessage>> receivedMessages
     )
     {
         var batches = receivedMessages.GroupAdjacentBy(
@@ -35,7 +35,7 @@ public static class IncomingMessageBatcher
     }
 
     private static IEnumerable<OutgoingMessage<TId>> BatchAddedGames<TId>(
-        IEnumerable<ReceivedMessage<TId, IncomingMessage.GameAdded>> addedGames
+        IEnumerable<MessageEnvelope<TId, IncomingMessage.GameAdded>> addedGames
     )
     {
         yield return new OutgoingMessage<TId>.Lobby(
@@ -45,7 +45,7 @@ public static class IncomingMessageBatcher
     }
 
     private static IEnumerable<OutgoingMessage<TId>> BatchRemovedGames<TId>(
-        IEnumerable<ReceivedMessage<TId, IncomingMessage.GameRemoved>> removedGames
+        IEnumerable<MessageEnvelope<TId, IncomingMessage.GameRemoved>> removedGames
     )
     {
         yield return new OutgoingMessage<TId>.Lobby(
@@ -55,7 +55,7 @@ public static class IncomingMessageBatcher
     }
 
     private static IEnumerable<OutgoingMessage<TId>> BatchChangedGames<TId>(
-        IEnumerable<ReceivedMessage<TId, IncomingMessage.GameChanged>> changedGames
+        IEnumerable<MessageEnvelope<TId, IncomingMessage.GameChanged>> changedGames
     )
     {
         foreach (var gameChangedById in changedGames.GroupBy(x => x.Message.Game.Id))

@@ -1,11 +1,11 @@
 ﻿using FsCheck;
 using FsCheck.Xunit;
 using Tenuki.Commons;
-using Tenuki.Services.Logic;
+using Tenuki.Services.Logic.Game;
 using Tenuki.Services.Tests.Generators;
 using Xunit;
 
-namespace Tenuki.Services.Tests.Logic;
+namespace Tenuki.Services.Tests.Logic.Game;
 
 public sealed class GameSettingsTests
 {

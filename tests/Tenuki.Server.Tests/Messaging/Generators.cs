@@ -125,15 +125,15 @@ public static class Generators
             ResumePlayGen.Select(x => (GameCommand)x)
         );
 
-    public static Gen<ReceivedMessage<Guid, IncomingMessage>> ReceivedMessageGen =>
+    public static Gen<MessageEnvelope<Guid, IncomingMessage>> ReceivedMessageGen =>
         from id in ArbMap.Default.GeneratorFor<Guid>()
         from incomingMessage in IncomingMessageGen
-        select ReceivedMessage.Create(id, incomingMessage);
+        select MessageEnvelope.Create(id, incomingMessage);
 
-    public static Arbitrary<ReceivedMessage<Guid, IncomingMessage>> ReceivedMessageArbitrary() =>
+    public static Arbitrary<MessageEnvelope<Guid, IncomingMessage>> ReceivedMessageArbitrary() =>
         Arb.From(ReceivedMessageGen);
 
-    public static Arbitrary<ReceivedMessage<
+    public static Arbitrary<MessageEnvelope<
         Guid,
         IncomingMessage.GameChanged
     >[]> GameChangedMessages()
@@ -155,7 +155,7 @@ public static class Generators
                         revisions[i]
                     );
 
-                    return ReceivedMessage.Create(
+                    return MessageEnvelope.Create(
                         Guid.NewGuid(),
                         new IncomingMessage.GameChanged(game, [.. commands[i]])
                     );

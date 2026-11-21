@@ -1,4 +1,4 @@
-﻿namespace Tenuki.Services.Logic;
+﻿namespace Tenuki.Services.Logic.Game;
 
 public static class GameLogicErrors
 {

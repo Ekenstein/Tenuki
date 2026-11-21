@@ -3,7 +3,8 @@ using FsCheck;
 using FsCheck.Fluent;
 using Tenuki.Commons;
 using Tenuki.Protocol;
-using Tenuki.Services.Logic;
+using Tenuki.Services.Logic.Game;
+using Tenuki.Services.Logic.GameLobby;
 
 namespace Tenuki.Services.Tests.Generators;
 
@@ -20,6 +21,80 @@ public static class Arbitraries
         {
             Handicap = handicap,
         };
+
+    private static Gen<ChallengeId> ChallengeIdGen =>
+        ArbMap.Default.GeneratorFor<Guid>().Select(guid => new ChallengeId(guid));
+    private static Gen<GameId> GameIdGen =>
+        ArbMap.Default.GeneratorFor<Guid>().Select(guid => new GameId(guid));
+    private static Gen<ColorPreference> ColorPreferenceGen =>
+        Gen.Elements(Enum.GetValues<ColorPreference>());
+
+    private static Gen<GameChallenge> GameChallengeGen =>
+        from id in ChallengeIdGen
+        from gameSettings in GameSettingsGen
+        from colorPreference in ColorPreferenceGen
+        select new GameChallenge(id, gameSettings, colorPreference);
+
+    private static Gen<GameLobbyState.Waiting> WaitingGameLobbyStateGen =>
+        from id in GameIdGen
+        from gameSettings in GameSettingsGen
+        from challenges in Gen.ArrayOf(GameChallengeGen)
+        select new GameLobbyState.Waiting(id, gameSettings, [.. challenges.DistinctBy(x => x.Id)]);
+
+    private static Gen<GameLobbyStateWithExistingChallenge> GameLobbyStateWithExistingChallengeGen =>
+        from state in WaitingGameLobbyStateGen
+        from challenge in GameChallengeGen.Where(x => !state.Challenges.Any(c => c.Id == x.Id))
+        from index in Gen.Choose(0, state.Challenges.Count)
+        let challenges = state.Challenges.Insert(index, challenge)
+        select new GameLobbyStateWithExistingChallenge(
+            state with
+            {
+                Challenges = challenges,
+            },
+            challenge
+        );
+
+    private static Gen<GameLobbyStateWithDuplicateChallenge> GameLobbyStateWithDuplicateChallengeGen =>
+        from existing in GameLobbyStateWithExistingChallengeGen
+        from gameSettings in GameSettingsGen
+        from colorPreference in ColorPreferenceGen
+        select new GameLobbyStateWithDuplicateChallenge(
+            existing.State,
+            new GameChallenge(existing.Challenge.Id, gameSettings, colorPreference)
+        );
+
+    private static Gen<GameLobbyStateWithUniqueChallenge> GameLobbyStateWithUniqueChallengeGen =>
+        from state in WaitingGameLobbyStateGen
+        from gameChallenge in GameChallengeGen.Where(challenge =>
+            !state.Challenges.Any(x => x.Id == challenge.Id)
+        )
+        select new GameLobbyStateWithUniqueChallenge(state, gameChallenge);
+
+    private static Gen<GameLobbyState.Started> StartedGameLobbyStateGen =>
+        from lobby in GameLobbyStateWithExistingChallengeGen
+        select new GameLobbyState.Started(
+            lobby.State.GameId,
+            lobby.Challenge.ProposedSettings,
+            lobby.Challenge.ColorPreference,
+            lobby.Challenge.Id
+        );
+
+    public static Arbitrary<GameLobbyStateWithExistingChallenge> GameLobbyStateWithExistingChallenge() =>
+        Arb.From(GameLobbyStateWithExistingChallengeGen);
+
+    public static Arbitrary<GameLobbyStateWithUniqueChallenge> GameLobbyStateWithUniqueChallenge() =>
+        Arb.From(GameLobbyStateWithUniqueChallengeGen);
+
+    public static Arbitrary<GameLobbyStateWithDuplicateChallenge> GameLobbyStateWithDuplicateChallenge() =>
+        Arb.From(GameLobbyStateWithDuplicateChallengeGen);
+
+    public static Arbitrary<GameLobbyState.Started> StartedGameLobbyState() =>
+        Arb.From(StartedGameLobbyStateGen);
+
+    public static Arbitrary<GameLobbyState.Waiting> WaitingGameLobbyState() =>
+        Arb.From(WaitingGameLobbyStateGen);
+
+    public static Arbitrary<GameChallenge> GameChallenge() => Arb.From(GameChallengeGen);
 
     public static Arbitrary<GameSettings> GameSettings() => Arb.From(GameSettingsGen);
 

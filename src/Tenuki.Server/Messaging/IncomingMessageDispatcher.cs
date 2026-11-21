@@ -10,7 +10,7 @@ public sealed class IncomingMessageDispatcher(
 )
 {
     public async IAsyncEnumerable<ImmutableList<TId>> DispatchAsync<TId>(
-        IEnumerable<ReceivedMessage<TId, IncomingMessage>> messages,
+        IEnumerable<MessageEnvelope<TId, IncomingMessage>> messages,
         [EnumeratorCancellation] CancellationToken cancellationToken
     )
         where TId : notnull

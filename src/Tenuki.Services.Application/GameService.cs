@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Tenuki.Commons;
 using Tenuki.Protocol;
-using Tenuki.Services.Logic;
+using Tenuki.Services.Logic.Game;
 
 namespace Tenuki.Services.Application;
 

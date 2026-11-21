@@ -1,7 +1,7 @@
 ﻿using Tenuki.Commons;
 using Tenuki.Protocol;
 
-namespace Tenuki.Services.Logic;
+namespace Tenuki.Services.Logic.Game;
 
 public static class GameLogic
 {

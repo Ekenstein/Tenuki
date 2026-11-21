@@ -140,12 +140,12 @@ public sealed class RedisIncomingMessageReader(
     }
 
     private (
-        IReadOnlyList<ReceivedMessage<RedisValue, ImmutableList<Error>>> errors,
-        IReadOnlyList<ReceivedMessage<RedisValue, IncomingMessage>> messages
+        IReadOnlyList<MessageEnvelope<RedisValue, ImmutableList<Error>>> errors,
+        IReadOnlyList<MessageEnvelope<RedisValue, IncomingMessage>> messages
     ) PartitionStreamEntries(StreamEntry[] entries)
     {
-        var errors = new List<ReceivedMessage<RedisValue, ImmutableList<Error>>>();
-        var messages = new List<ReceivedMessage<RedisValue, IncomingMessage>>();
+        var errors = new List<MessageEnvelope<RedisValue, ImmutableList<Error>>>();
+        var messages = new List<MessageEnvelope<RedisValue, IncomingMessage>>();
 
         foreach (var entry in entries)
         {

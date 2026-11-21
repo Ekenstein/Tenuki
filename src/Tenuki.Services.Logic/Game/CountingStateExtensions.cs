@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using Tenuki.Commons;
 
-namespace Tenuki.Services.Logic;
+namespace Tenuki.Services.Logic.Game;
 
 internal static class CountingStateExtensions
 {

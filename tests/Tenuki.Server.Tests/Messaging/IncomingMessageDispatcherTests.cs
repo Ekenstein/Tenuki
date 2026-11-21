@@ -31,7 +31,7 @@ public sealed class IncomingMessageDispatcherTests
 
     [Property(Arbitrary = [typeof(Generators)])]
     public async Task SourceIds_Are_Yielded_Only_After_Broadcast_Completes(
-        ReceivedMessage<Guid, IncomingMessage> message
+        MessageEnvelope<Guid, IncomingMessage> message
     )
     {
         var completion = new TaskCompletionSource(

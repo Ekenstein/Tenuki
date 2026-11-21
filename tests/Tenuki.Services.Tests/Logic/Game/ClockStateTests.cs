@@ -2,9 +2,9 @@
 using FsCheck.Fluent;
 using FsCheck.Xunit;
 using Tenuki.Commons;
-using Tenuki.Services.Logic;
+using Tenuki.Services.Logic.Game;
 
-namespace Tenuki.Services.Tests.Logic;
+namespace Tenuki.Services.Tests.Logic.Game;
 
 public class ClockStateTests
 {

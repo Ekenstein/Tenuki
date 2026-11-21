@@ -18,7 +18,7 @@ public sealed class IncomingMessageBatcherTests
     }
 
     [Property]
-    public bool All_Ids_Are_Preserved(ReceivedMessage<Guid, IncomingMessage>[] items)
+    public bool All_Ids_Are_Preserved(MessageEnvelope<Guid, IncomingMessage>[] items)
     {
         var result = items.Batch();
         var expected = items.Select(x => x.Id).Order();
@@ -27,7 +27,7 @@ public sealed class IncomingMessageBatcherTests
     }
 
     [Property]
-    public bool There_Are_No_Duplications_Of_Ids(ReceivedMessage<Guid, IncomingMessage>[] items)
+    public bool There_Are_No_Duplications_Of_Ids(MessageEnvelope<Guid, IncomingMessage>[] items)
     {
         var result = items.Batch();
         var allIds = result.SelectMany(x => x.SourceIds);
@@ -36,7 +36,7 @@ public sealed class IncomingMessageBatcherTests
     }
 
     [Property]
-    public void Batch_Is_Deterministic(ReceivedMessage<Guid, IncomingMessage>[] items)
+    public void Batch_Is_Deterministic(MessageEnvelope<Guid, IncomingMessage>[] items)
     {
         var result1 = items.Batch().ToArray();
         var result2 = items.Batch().ToArray();
@@ -45,7 +45,7 @@ public sealed class IncomingMessageBatcherTests
 
     [Property]
     public bool Batches_Only_Contain_Messages_Of_The_Same_Type(
-        ReceivedMessage<Guid, IncomingMessage>[] items
+        MessageEnvelope<Guid, IncomingMessage>[] items
     )
     {
         var incomingById = items.ToDictionary(x => x.Id);
@@ -60,7 +60,7 @@ public sealed class IncomingMessageBatcherTests
 
     [Property]
     public bool OutgoingMessage_Type_Represents_The_Incoming_Message_Type(
-        ReceivedMessage<Guid, IncomingMessage>[] items
+        MessageEnvelope<Guid, IncomingMessage>[] items
     )
     {
         var incomingById = items.ToDictionary(x => x.Id);
@@ -90,11 +90,11 @@ public sealed class IncomingMessageBatcherTests
 
     [Property]
     public bool StateUpdated_Accurately_Represents_Its_Source_Messages(
-        ReceivedMessage<Guid, IncomingMessage.GameChanged>[] items
+        MessageEnvelope<Guid, IncomingMessage.GameChanged>[] items
     )
     {
         var receivedMessages = items.Select(x =>
-            ReceivedMessage.Create(x.Id, (IncomingMessage)x.Message)
+            MessageEnvelope.Create(x.Id, (IncomingMessage)x.Message)
         );
 
         return receivedMessages
