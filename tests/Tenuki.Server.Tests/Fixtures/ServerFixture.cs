@@ -2,14 +2,13 @@
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Time.Testing;
 using Tenuki.Commons;
 using Tenuki.Server.BackgroundServices;
-using Tenuki.Server.Options;
 using Tenuki.Server.Redis;
 using Tenuki.Server.Tests.Clients;
 using Tenuki.Services.Application;
+using Tenuki.Services.Application.Game;
 using Tenuki.Tests.Utils;
 
 namespace Tenuki.Server.Tests.Fixtures;
@@ -20,15 +19,15 @@ public sealed class ServerFixture : IAsyncDisposable
     private readonly HttpClient _httpClient;
 
     public GameClient Games { get; }
+    public GameLobbyClient GameLobbies { get; }
     public FakeTimeProvider TimeProvider { get; } = new FakeTimeProvider();
-    public GameNotificationOptions GameNotificationOptions =>
-        _serverFactory.Services.GetRequiredService<IOptions<GameNotificationOptions>>().Value;
 
     public ServerFixture()
     {
         _serverFactory = new ServerFactory(TimeProvider, ServerFactory.ValidConfig);
         _httpClient = _serverFactory.CreateClient();
-        Games = new GameClient(_httpClient);
+        Games = new(_httpClient);
+        GameLobbies = new(_httpClient);
     }
 
     public TenukiClient CreateHubClient()
@@ -64,6 +63,7 @@ public sealed class ServerFixture : IAsyncDisposable
     )
         where T : TimedBackgroundService
     {
+        cancellationToken.ThrowIfCancellationRequested();
         var service = GetTimedBackgroundService<T>();
         TimeProvider.Advance(service.Period);
         await service.WaitForTickAsync(tick, cancellationToken);

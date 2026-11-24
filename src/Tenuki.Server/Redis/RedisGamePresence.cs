@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using StackExchange.Redis;
 using Tenuki.Commons;
 using Tenuki.Services.Application;
+using Tenuki.Services.Application.Game;
 
 namespace Tenuki.Server.Redis;
 
@@ -13,7 +14,7 @@ internal sealed class RedisGamePresence(
 {
     private static readonly RedisKey GamesKey = "tenuki:presence:games";
 
-    private static RedisKey GameKey(GameId gameId) => $"tenuki:presence:game:{gameId.Value}";
+    private static RedisKey GameKey(GameId gameId) => $"tenuki:presence:game:{gameId}";
 
     public async IAsyncEnumerable<GameId> GetLiveGamesAsync(
         [EnumeratorCancellation] CancellationToken cancellationToken
@@ -61,7 +62,7 @@ internal sealed class RedisGamePresence(
         var transaction = database.CreateTransaction();
 
         var subscriberToGame = transaction.SetAddAsync(GameKey(gameId), connectionId);
-        var gameAddedToIndex = transaction.SetAddAsync(GamesKey, gameId.Value.ToString());
+        var gameAddedToIndex = transaction.SetAddAsync(GamesKey, gameId.ToString());
 
         var executed = await transaction.ExecuteAsync();
         if (executed)

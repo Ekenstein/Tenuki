@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using Tenuki.Commons;
 using Tenuki.Server.Redis;
 using Tenuki.Server.Tests.Fixtures;
-using Tenuki.Services.Application;
+using Tenuki.Services.Application.Game;
 using Xunit;
 
 namespace Tenuki.Server.Tests.Redis;
@@ -31,35 +31,13 @@ public sealed class RedisGameStateStoreTests(RedisFixture fixture) : IClassFixtu
     public async Task GetAsync_Returns_State_Token_For_Created_Game()
     {
         var expectedGame = new GameDescription(GameId.NewId(), "Hello World", 1);
-
-        Assert.True(
-            await Instance.CreateAsync(expectedGame, TestContext.Current.CancellationToken)
-        );
+        await SeedGameAsync(expectedGame);
         var actualGame = await Instance.GetAsync(
             expectedGame.Id,
             TestContext.Current.CancellationToken
         );
         Assert.NotNull(actualGame);
         Assert.Equal(expectedGame, actualGame);
-    }
-
-    [Fact]
-    public async Task CreateAsync_Returns_False_If_Game_With_Id_Already_Exist()
-    {
-        var gameId = GameId.NewId();
-
-        Assert.True(
-            await Instance.CreateAsync(
-                new(gameId, "Hello World", 1),
-                TestContext.Current.CancellationToken
-            )
-        );
-        Assert.False(
-            await Instance.CreateAsync(
-                new(gameId, "Another world", 2),
-                TestContext.Current.CancellationToken
-            )
-        );
     }
 
     [Fact]
@@ -78,12 +56,7 @@ public sealed class RedisGameStateStoreTests(RedisFixture fixture) : IClassFixtu
     public async Task UpdateAsync_Returns_Updated_If_Game_Has_Expected_Revision()
     {
         var gameId = GameId.NewId();
-        Assert.True(
-            await Instance.CreateAsync(
-                new(gameId, "Hello World", 0),
-                TestContext.Current.CancellationToken
-            )
-        );
+        await SeedGameAsync(new(gameId, "Hello World", 0));
         Assert.IsType<GameStateUpdateOutcome.Updated>(
             await Instance.UpdateAsync(
                 new(gameId, "Another world", 1),
@@ -99,12 +72,7 @@ public sealed class RedisGameStateStoreTests(RedisFixture fixture) : IClassFixtu
     {
         var gameId = GameId.NewId();
         const string stateToken = "Hello World";
-        Assert.True(
-            await Instance.CreateAsync(
-                new(gameId, stateToken, 0),
-                TestContext.Current.CancellationToken
-            )
-        );
+        await SeedGameAsync(new(gameId, stateToken, 0));
         var conflict = Assert.IsType<GameStateUpdateOutcome.Conflict>(
             await Instance.UpdateAsync(
                 new(gameId, "Another world", 2),
@@ -114,5 +82,13 @@ public sealed class RedisGameStateStoreTests(RedisFixture fixture) : IClassFixtu
             )
         );
         Assert.Equal(stateToken, conflict.CurrentStateToken);
+    }
+
+    private async Task SeedGameAsync(GameDescription game)
+    {
+        var db = fixture.Connection.GetDatabase();
+
+        await db.HashSetAsync(RedisConstants.GameKey(game.Id), game.ToEntries())
+            .WaitAsync(TestContext.Current.CancellationToken);
     }
 }

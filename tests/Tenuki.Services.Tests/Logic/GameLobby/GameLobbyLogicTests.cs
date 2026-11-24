@@ -1,5 +1,4 @@
 ﻿using FsCheck.Xunit;
-using Tenuki.Commons;
 using Tenuki.Services.Logic.GameLobby;
 using Tenuki.Services.Tests.Generators;
 
@@ -18,7 +17,7 @@ public sealed class GameLobbyLogicTests
         return result.TryGetValue(out var updatedLobby)
             && updatedLobby.Challenges.SequenceEqual(lobby.Challenges.Add(challenge))
             && updatedLobby.GameId == lobby.GameId
-            && updatedLobby.GameSettings == lobby.GameSettings;
+            && updatedLobby.Settings == lobby.Settings;
     }
 
     [Property]
@@ -54,7 +53,7 @@ public sealed class GameLobbyLogicTests
                 lobby.Challenges.Where(x => x.Id != challenge.Id)
             )
             && updatedLobby.GameId == lobby.GameId
-            && updatedLobby.GameSettings == lobby.GameSettings;
+            && updatedLobby.Settings == lobby.Settings;
     }
 
     [Property]
@@ -86,9 +85,8 @@ public sealed class GameLobbyLogicTests
         var result = GameLobbyLogic.AcceptChallenge(lobby, challenge.Id);
         return result.TryGetValue(out var updatedLobby)
             && updatedLobby.AcceptedChallengeId == challenge.Id
-            && updatedLobby.ColorPreference == challenge.ColorPreference
             && updatedLobby.GameId == lobby.GameId
-            && updatedLobby.GameSettings == challenge.ProposedSettings;
+            && updatedLobby.Settings == challenge.ProposedSettings;
     }
 
     [Property]

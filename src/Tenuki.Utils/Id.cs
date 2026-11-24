@@ -32,4 +32,6 @@ public abstract record Id<TId>(Guid Value) : IParsable<TId>, IComparable<TId>
         ?? throw new InvalidOperationException($"Failed to create instance of {typeof(TId).Name}");
 
     public int CompareTo(TId? other) => Value.CompareTo(other?.Value);
+
+    public sealed override string ToString() => Value.ToString();
 }

@@ -3,13 +3,12 @@ using Tenuki.Commons;
 using Tenuki.Protocol;
 using Tenuki.Services.Logic.Game;
 
-namespace Tenuki.Services.Application;
+namespace Tenuki.Services.Application.Game;
 
 public sealed class GameService(
     IGameStateStore store,
     IGameStateTokenCodec tokens,
     IGamePresence presence,
-    IIdGenerator idGenerator,
     TimeProvider timeProvider
 )
 {
@@ -32,34 +31,6 @@ public sealed class GameService(
                 yield return game;
             }
         }
-    }
-
-    public async Task<Result<GameDescription>> CreateGameAsync(
-        GameSettings gameSettings,
-        CancellationToken cancellationToken
-    )
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-        var result = GameLogic.CreateGame(
-            GameId.NewId(idGenerator),
-            gameSettings,
-            timeProvider.GetUtcNow()
-        );
-
-        if (result.TryGetValue(out var state))
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            var stateToken = tokens.Encode(state);
-            var gameDescription = new GameDescription(state.Id, stateToken, state.Revision);
-            if (!await store.CreateAsync(gameDescription, cancellationToken))
-            {
-                throw new InvalidOperationException("There's another game with the same id.");
-            }
-
-            return Result.Success(gameDescription);
-        }
-
-        return new Failure(result.Errors);
     }
 
     public async Task<Result<GameCommandResponse>> ApplyGameCommandAsync(

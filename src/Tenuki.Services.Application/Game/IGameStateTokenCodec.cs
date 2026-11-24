@@ -1,6 +1,6 @@
 ﻿using Tenuki.Commons;
 
-namespace Tenuki.Services.Application;
+namespace Tenuki.Services.Application.Game;
 
 public interface IGameStateTokenCodec
 {

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Options;
 using Tenuki.Commons;
 using Tenuki.Services.Application;
+using Tenuki.Services.Application.Game;
 
 namespace Tenuki.Server;
 

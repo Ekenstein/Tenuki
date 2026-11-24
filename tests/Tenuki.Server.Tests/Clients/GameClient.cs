@@ -1,33 +1,20 @@
 ﻿using Tenuki.Commons;
-using Tenuki.Server.Models;
-using Tenuki.Services.Application;
+using Tenuki.Server.Http.Models;
+using Tenuki.Services.Application.Game;
 using Tenuki.Tests.Utils;
 
 namespace Tenuki.Server.Tests.Clients;
 
 public sealed class GameClient(HttpClient httpClient)
 {
-    public async Task<JsonHttpResponseMessage<GameDescription>> PostGameAsync(
-        PostGameRequest request,
-        CancellationToken cancellationToken
-    )
-    {
-        var response = await httpClient.PostAsJsonAsync(
-            "api/games",
-            request,
-            JsonUtils.DefaultOptions,
-            cancellationToken
-        );
-        return new(response);
-    }
-
     public async Task<JsonHttpResponseMessage<GameCommandResponse>> PostGameCommandAsync(
         PostGameCommandRequest request,
         CancellationToken cancellationToken
     )
     {
+        cancellationToken.ThrowIfCancellationRequested();
         var response = await httpClient.PostAsJsonAsync(
-            $"api/games/command",
+            "api/games/command",
             request,
             JsonUtils.DefaultOptions,
             cancellationToken
@@ -40,7 +27,8 @@ public sealed class GameClient(HttpClient httpClient)
         CancellationToken cancellationToken
     )
     {
-        var response = await httpClient.GetAsync($"api/games/{gameId.Value}", cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+        var response = await httpClient.GetAsync($"api/games/{gameId}", cancellationToken);
         return new(response);
     }
 
@@ -48,6 +36,7 @@ public sealed class GameClient(HttpClient httpClient)
         CancellationToken cancellationToken
     )
     {
+        cancellationToken.ThrowIfCancellationRequested();
         var response = await httpClient.GetAsync("api/games/live", cancellationToken);
         return new(response);
     }

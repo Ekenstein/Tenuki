@@ -1,46 +1,22 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Tenuki.Commons;
-using Tenuki.Server.Models;
-using Tenuki.Services.Application;
+using Tenuki.Server.Http.Models;
+using Tenuki.Services.Application.Game;
 
-namespace Tenuki.Server.Actions;
+namespace Tenuki.Server.Http.Actions;
 
 public static class GameActions
 {
     public static async Task<
-        Results<Ok<GameDescription>, BadRequest<ImmutableList<Error>>>
-    > PostGameAsync(
-        ActionContext context,
-        PostGameRequest request,
-        CancellationToken cancellationToken
-    )
-    {
-        var gameSettings = new GameSettings(
-            BoardSize: request.BoardSize,
-            Komi: request.Komi,
-            Handicap: request.Handicap,
-            request.TimeSettings
-        );
-
-        var result = await context.Games.CreateGameAsync(gameSettings, cancellationToken);
-
-        return result switch
-        {
-            Success<GameDescription> success => TypedResults.Ok(success.Value),
-            Failure failure => TypedResults.BadRequest(failure.Errors),
-        };
-    }
-
-    public static async Task<
         Results<Ok<GameCommandResponse>, BadRequest<ImmutableList<Error>>>
     > PostGameCommandAsync(
-        ActionContext context,
+        GameService service,
         PostGameCommandRequest request,
         CancellationToken cancellationToken
     )
     {
-        var result = await context.Games.ApplyGameCommandAsync(
+        var result = await service.ApplyGameCommandAsync(
             request.StateToken,
             request.Command,
             cancellationToken
@@ -54,22 +30,22 @@ public static class GameActions
     }
 
     public static async Task<Results<Ok<GameDescription>, NotFound<GameId>>> GetGameAsync(
-        ActionContext context,
+        GameService service,
         GameId gameId,
         CancellationToken cancellationToken
     )
     {
-        var game = await context.Games.GetGameAsync(gameId, cancellationToken);
+        var game = await service.GetGameAsync(gameId, cancellationToken);
         return game != null ? TypedResults.Ok(game) : TypedResults.NotFound(gameId);
     }
 
     public static async Task<Ok<GetGamesResponse>> GetLiveGamesAsync(
-        ActionContext context,
+        GameService service,
         CancellationToken cancellationToken
     )
     {
-        var games = await context
-            .Games.GetLiveGamesAsync(cancellationToken)
+        var games = await service
+            .GetLiveGamesAsync(cancellationToken)
             .ToArrayAsync(cancellationToken);
         return TypedResults.Ok(new GetGamesResponse([.. games]));
     }

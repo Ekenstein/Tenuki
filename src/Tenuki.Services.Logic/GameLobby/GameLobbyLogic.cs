@@ -1,9 +1,26 @@
-﻿using Tenuki.Commons;
+﻿using System.Collections.Immutable;
+using Tenuki.Commons;
+using Tenuki.Services.Logic.Game;
 
 namespace Tenuki.Services.Logic.GameLobby;
 
 public static class GameLobbyLogic
 {
+    public static Result<GameLobbyState.Waiting> CreateLobby(
+        GameId gameId,
+        GameLobbySettings settings
+    )
+    {
+        var errors = settings.GameSettings.Validate().ToImmutableList();
+        if (errors.Count > 0)
+        {
+            return new Failure(errors);
+        }
+
+        var lobby = new GameLobbyState.Waiting(gameId, settings, [], 1);
+        return Result.Success(lobby);
+    }
+
     public static Result<GameLobbyState.Waiting> AddChallenge(
         GameLobbyState state,
         GameChallenge challenge
@@ -24,7 +41,17 @@ public static class GameLobbyLogic
             return new Failure([GameLobbyErrors.ChallengeAlreadyExist]);
         }
 
-        var updatedState = state with { Challenges = state.Challenges.Add(challenge) };
+        var errors = challenge.ProposedSettings.GameSettings.Validate().ToImmutableList();
+        if (errors.Count > 0)
+        {
+            return new Failure(errors);
+        }
+
+        var updatedState = state with
+        {
+            Challenges = state.Challenges.Add(challenge),
+            Revision = state.Revision + 1,
+        };
 
         return Result.Success(updatedState);
     }
@@ -47,6 +74,7 @@ public static class GameLobbyLogic
         var updatedState = state with
         {
             Challenges = state.Challenges.RemoveAll(x => x.Id == challengeId),
+            Revision = state.Revision + 1,
         };
 
         if (updatedState.Challenges.Count == state.Challenges.Count)
@@ -82,8 +110,8 @@ public static class GameLobbyLogic
             new GameLobbyState.Started(
                 state.GameId,
                 challenge.ProposedSettings,
-                challenge.ColorPreference,
-                challengeId
+                challengeId,
+                state.Revision + 1
             )
         );
     }

@@ -3,10 +3,11 @@ using System.Text;
 using System.Text.Json;
 using Tenuki.Commons;
 using Tenuki.Protocol;
-using Tenuki.Server.Models;
+using Tenuki.Server.Http.Models;
 using Tenuki.Server.Tests.Fixtures;
-using Tenuki.Services.Application;
+using Tenuki.Services.Application.Game;
 using Tenuki.Services.Logic.Game;
+using Tenuki.Services.Logic.GameLobby;
 using Tenuki.Tests.Utils;
 using Xunit;
 
@@ -18,7 +19,7 @@ public sealed class PostGameCommandTests(ServerFixture fixture) : IClassFixture<
     public async Task Post_Game_Command_With_Tampered_State_Returns_400()
     {
         var response = await fixture
-            .PostGameAsync(PostGameRequest.Default, TestContext.Current.CancellationToken)
+            .CreateGameAsync(GameLobbySettings.Default, TestContext.Current.CancellationToken)
             .AssertNoFailureAsync(TestContext.Current.CancellationToken);
 
         var gameState = HmacTokenCodec
@@ -52,7 +53,7 @@ public sealed class PostGameCommandTests(ServerFixture fixture) : IClassFixture<
     {
         const string invalidToken = "Hello World";
         await fixture
-            .PostGameAsync(PostGameRequest.Default, TestContext.Current.CancellationToken)
+            .CreateGameAsync(GameLobbySettings.Default, TestContext.Current.CancellationToken)
             .AssertNoFailureAsync(TestContext.Current.CancellationToken);
 
         var command = new GameCommand.Pass(new(), PlayerColor.Black);
@@ -71,7 +72,7 @@ public sealed class PostGameCommandTests(ServerFixture fixture) : IClassFixture<
     public async Task Post_Game_Command_Pass_When_It_Is_Not_Players_Turn_Returns_200_With_Rejected_Outcome()
     {
         var game = await fixture
-            .PostGameAsync(PostGameRequest.Default, TestContext.Current.CancellationToken)
+            .CreateGameAsync(GameLobbySettings.Default, TestContext.Current.CancellationToken)
             .AssertNoFailureAsync(TestContext.Current.CancellationToken);
         var command = new GameCommand.Pass(new(), PlayerColor.White);
 
@@ -89,7 +90,7 @@ public sealed class PostGameCommandTests(ServerFixture fixture) : IClassFixture<
     public async Task Post_Game_Command_Stone_When_It_Is_Not_Players_Turn_Returns_200_With_Rejected_Outcome()
     {
         var game = await fixture
-            .PostGameAsync(PostGameRequest.Default, TestContext.Current.CancellationToken)
+            .CreateGameAsync(GameLobbySettings.Default, TestContext.Current.CancellationToken)
             .AssertNoFailureAsync(TestContext.Current.CancellationToken);
         var command = new GameCommand.Stone(new(), PlayerColor.White, new(3, 3));
 
@@ -106,15 +107,20 @@ public sealed class PostGameCommandTests(ServerFixture fixture) : IClassFixture<
     [Fact]
     public async Task Post_Game_Command_When_Time_Has_Run_Out_Returns_200_With_TimeExpired_Outcome()
     {
-        var request = PostGameRequest.Default with
+        var request = GameLobbySettings.Default with
         {
-            TimeSettings = new TimeSettings.Fixed(60_000L),
+            GameSettings = GameLobbySettings.Default.GameSettings with
+            {
+                TimeSettings = new TimeSettings.Fixed(60_000L),
+            },
         };
 
         var game = await fixture
-            .PostGameAsync(request, TestContext.Current.CancellationToken)
+            .CreateGameAsync(request, TestContext.Current.CancellationToken)
             .AssertNoFailureAsync(TestContext.Current.CancellationToken);
-        fixture.TimeProvider.Advance(TimeSpan.FromMilliseconds(request.TimeSettings.MainTimeMs));
+        fixture.TimeProvider.Advance(
+            TimeSpan.FromMilliseconds(request.GameSettings.TimeSettings.MainTimeMs)
+        );
 
         var command = new GameCommand.Pass(new(), PlayerColor.Black);
         var outcome = await fixture
@@ -130,7 +136,7 @@ public sealed class PostGameCommandTests(ServerFixture fixture) : IClassFixture<
     public async Task Post_Game_Command_Stone_On_Occupied_Point_Returns_200_With_Rejected_Outcome()
     {
         var game = await fixture
-            .PostGameAsync(PostGameRequest.Default, TestContext.Current.CancellationToken)
+            .CreateGameAsync(GameLobbySettings.Default, TestContext.Current.CancellationToken)
             .AssertNoFailureAsync(TestContext.Current.CancellationToken);
 
         var c1 = new GameCommand.Stone(new(), PlayerColor.Black, new(3, 3));
@@ -160,7 +166,7 @@ public sealed class PostGameCommandTests(ServerFixture fixture) : IClassFixture<
     public async Task Post_Game_Command_Stone_That_Captures_Another_Stone_Increases_Captures()
     {
         var game = await fixture
-            .PostGameAsync(PostGameRequest.Default, TestContext.Current.CancellationToken)
+            .CreateGameAsync(GameLobbySettings.Default, TestContext.Current.CancellationToken)
             .AssertNoFailureAsync(TestContext.Current.CancellationToken);
         GameCommand[] setupPosition =
         [
@@ -189,7 +195,7 @@ public sealed class PostGameCommandTests(ServerFixture fixture) : IClassFixture<
     public async Task Post_Game_Command_With_Out_Of_Date_State_Returns_Conflict_With_Current_StateToken()
     {
         var game = await fixture
-            .PostGameAsync(PostGameRequest.Default, TestContext.Current.CancellationToken)
+            .CreateGameAsync(GameLobbySettings.Default, TestContext.Current.CancellationToken)
             .AssertNoFailureAsync(TestContext.Current.CancellationToken);
         var appliedOutcome = Assert.IsType<GameCommandResponse.Applied>(
             await fixture
@@ -223,7 +229,7 @@ public sealed class PostGameCommandTests(ServerFixture fixture) : IClassFixture<
     public async Task Post_Game_Command_Broadcasts_State_Update_To_Subscribers()
     {
         var game = await fixture
-            .PostGameAsync(PostGameRequest.Default, TestContext.Current.CancellationToken)
+            .CreateGameAsync(GameLobbySettings.Default, TestContext.Current.CancellationToken)
             .AssertNoFailureAsync(TestContext.Current.CancellationToken);
         await using var client1 = fixture.CreateHubClient();
         await client1.StartAsync(TestContext.Current.CancellationToken);
@@ -255,7 +261,7 @@ public sealed class PostGameCommandTests(ServerFixture fixture) : IClassFixture<
     public async Task Post_Game_Commands_Broadcasts_Batched_State_Update_With_Revision_Range()
     {
         var game = await fixture
-            .PostGameAsync(PostGameRequest.Default, TestContext.Current.CancellationToken)
+            .CreateGameAsync(GameLobbySettings.Default, TestContext.Current.CancellationToken)
             .AssertNoFailureAsync(TestContext.Current.CancellationToken);
 
         await using var client = fixture.CreateHubClient();

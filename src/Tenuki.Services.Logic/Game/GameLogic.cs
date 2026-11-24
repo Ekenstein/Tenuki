@@ -1,4 +1,5 @@
-﻿using Tenuki.Commons;
+﻿using System.Collections.Immutable;
+using Tenuki.Commons;
 using Tenuki.Protocol;
 
 namespace Tenuki.Services.Logic.Game;
@@ -7,10 +8,10 @@ public static class GameLogic
 {
     public static Result<GameState> CreateGame(GameId id, GameSettings settings, DateTimeOffset now)
     {
-        var validationErrors = settings.Validate();
-        if (validationErrors.Any())
+        var validationErrors = settings.Validate().ToImmutableList();
+        if (validationErrors.Count > 0)
         {
-            return new Failure([.. validationErrors]);
+            return new Failure(validationErrors);
         }
 
         var gameState = new GameState(

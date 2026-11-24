@@ -29,17 +29,27 @@ public static class Arbitraries
     private static Gen<ColorPreference> ColorPreferenceGen =>
         Gen.Elements(Enum.GetValues<ColorPreference>());
 
-    private static Gen<GameChallenge> GameChallengeGen =>
-        from id in ChallengeIdGen
+    private static Gen<GameLobbySettings> GameLobbySettingsGen =>
         from gameSettings in GameSettingsGen
         from colorPreference in ColorPreferenceGen
-        select new GameChallenge(id, gameSettings, colorPreference);
+        select new GameLobbySettings(gameSettings, colorPreference);
+
+    private static Gen<GameChallenge> GameChallengeGen =>
+        from id in ChallengeIdGen
+        from settings in GameLobbySettingsGen
+        select new GameChallenge(id, settings);
 
     private static Gen<GameLobbyState.Waiting> WaitingGameLobbyStateGen =>
         from id in GameIdGen
-        from gameSettings in GameSettingsGen
+        from settings in GameLobbySettingsGen
+        from revision in ArbMap.Default.GeneratorFor<long>()
         from challenges in Gen.ArrayOf(GameChallengeGen)
-        select new GameLobbyState.Waiting(id, gameSettings, [.. challenges.DistinctBy(x => x.Id)]);
+        select new GameLobbyState.Waiting(
+            id,
+            settings,
+            [.. challenges.DistinctBy(x => x.Id)],
+            revision
+        );
 
     private static Gen<GameLobbyStateWithExistingChallenge> GameLobbyStateWithExistingChallengeGen =>
         from state in WaitingGameLobbyStateGen
@@ -56,11 +66,10 @@ public static class Arbitraries
 
     private static Gen<GameLobbyStateWithDuplicateChallenge> GameLobbyStateWithDuplicateChallengeGen =>
         from existing in GameLobbyStateWithExistingChallengeGen
-        from gameSettings in GameSettingsGen
-        from colorPreference in ColorPreferenceGen
+        from settings in GameLobbySettingsGen
         select new GameLobbyStateWithDuplicateChallenge(
             existing.State,
-            new GameChallenge(existing.Challenge.Id, gameSettings, colorPreference)
+            new GameChallenge(existing.Challenge.Id, settings)
         );
 
     private static Gen<GameLobbyStateWithUniqueChallenge> GameLobbyStateWithUniqueChallengeGen =>
@@ -75,8 +84,8 @@ public static class Arbitraries
         select new GameLobbyState.Started(
             lobby.State.GameId,
             lobby.Challenge.ProposedSettings,
-            lobby.Challenge.ColorPreference,
-            lobby.Challenge.Id
+            lobby.Challenge.Id,
+            lobby.State.Revision
         );
 
     public static Arbitrary<GameLobbyStateWithExistingChallenge> GameLobbyStateWithExistingChallenge() =>

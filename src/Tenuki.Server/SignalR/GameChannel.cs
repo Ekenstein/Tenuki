@@ -2,7 +2,7 @@
 using Tenuki.Commons;
 using Tenuki.Protocol;
 using Tenuki.Server.Messaging;
-using Tenuki.Services.Application;
+using Tenuki.Services.Application.Game;
 
 namespace Tenuki.Server.SignalR;
 
@@ -11,7 +11,7 @@ public sealed class GameChannel(
     IGamePresence presence
 ) : IMessageBroadcaster<GameMessage>
 {
-    private static string GroupName(GameId gameId) => $"tenuki:game:{gameId.Value}";
+    private static string GroupName(GameId gameId) => $"tenuki:game:{gameId}";
 
     public async Task JoinGameAsync(
         GameId gameId,

@@ -1,6 +1,6 @@
 ﻿using Tenuki.Server.SignalR;
 
-namespace Tenuki.Server.Routes;
+namespace Tenuki.Server.Http.Routes;
 
 public static class AllRoutes
 {
@@ -9,5 +9,6 @@ public static class AllRoutes
         var group = routes.MapGroup("api");
         group.MapHub<TenukiHub>("hub");
         GameRoutes.Register(group);
+        GameLobbyRoutes.Register(group);
     }
 }

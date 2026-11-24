@@ -2,7 +2,7 @@
 using Tenuki.Commons;
 using Tenuki.Protocol;
 
-namespace Tenuki.Services.Application;
+namespace Tenuki.Services.Application.Game;
 
 public closed record GameStateUpdateOutcome
 {
@@ -16,8 +16,6 @@ public closed record GameStateUpdateOutcome
 
 public interface IGameStateStore
 {
-    Task<bool> CreateAsync(GameDescription game, CancellationToken cancellationToken);
-
     /// <summary>
     /// Atomically commits a new game state if the expected revision matches.
     /// A successful commit also schedules a state change notification.

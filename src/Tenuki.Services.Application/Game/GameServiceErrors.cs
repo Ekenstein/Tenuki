@@ -1,4 +1,4 @@
-﻿namespace Tenuki.Services.Application;
+﻿namespace Tenuki.Services.Application.Game;
 
 internal static class GameServiceErrors
 {

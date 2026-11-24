@@ -5,7 +5,7 @@ using StackExchange.Redis;
 using Tenuki.Commons;
 using Tenuki.Protocol;
 using Tenuki.Server.Messaging;
-using Tenuki.Services.Application;
+using Tenuki.Services.Application.Game;
 
 namespace Tenuki.Server.Redis;
 
@@ -15,32 +15,16 @@ public sealed class RedisGameStateStore(
     IOptions<JsonOptions> jsonOptions
 ) : IGameStateStore
 {
-    public async Task<bool> CreateAsync(GameDescription game, CancellationToken cancellationToken)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-
-        var db = connection.GetDatabase();
-        var transaction = db.CreateTransaction();
-        var gameKey = RedisConstants.GameKey(game.Id);
-        transaction.AddCondition(Condition.KeyNotExists(gameKey));
-
-        return await CommitAsync(
-            transaction,
-            AddOrUpdateGameAsync(transaction, gameKey, game),
-            transaction.QueueAsync(
-                new IncomingMessage.GameAdded(game),
-                streamSettings,
-                jsonOptions.Value.SerializerOptions,
-                cancellationToken
-            )
-        );
-    }
-
     public async Task<GameDescription?> GetAsync(GameId gameId, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         var db = connection.GetDatabase();
         var hashEntries = await db.HashGetAllAsync(RedisConstants.GameKey(gameId));
+        if (hashEntries.Length <= 0)
+        {
+            return null;
+        }
+
         return hashEntries.ToGameDescription().ValueOrDefault();
     }
 

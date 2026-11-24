@@ -1,7 +1,8 @@
 ﻿using System.Net;
 using Tenuki.Commons;
-using Tenuki.Server.Models;
-using Tenuki.Services.Application;
+using Tenuki.Server.Http.Models;
+using Tenuki.Services.Application.Game;
+using Tenuki.Services.Logic.GameLobby;
 using Tenuki.Tests.Utils;
 using Xunit;
 
@@ -11,14 +12,83 @@ public static class ServerFixtureExtensions
 {
     extension(ServerFixture fixture)
     {
-        public async Task<Result<GameDescription>> PostGameAsync(
-            PostGameRequest request,
+        public async Task<Result<GameDescription>> CreateGameAsync(
+            GameLobbySettings settings,
             CancellationToken cancellationToken
         )
         {
-            using var response = await fixture.Games.PostGameAsync(request, cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
+            var lobby = await fixture.PostGameLobbyAsync(settings, cancellationToken);
+            if (!lobby.TryGetValue(out var lobbyState))
+            {
+                return new Failure(lobby.Errors);
+            }
 
+            var challenge = await fixture.PostChallengeAsync(
+                lobbyState.GameId,
+                settings,
+                cancellationToken
+            );
+            if (!challenge.TryGetValue(out var challengeState))
+            {
+                return new Failure(lobby.Errors);
+            }
+
+            return await fixture.PostAcceptChallengeAsync(
+                lobbyState.GameId,
+                challengeState.ChallengeId,
+                cancellationToken
+            );
+        }
+
+        public async Task<Result<GameDescription>> PostAcceptChallengeAsync(
+            GameId gameId,
+            ChallengeId challengeId,
+            CancellationToken cancellationToken
+        )
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            using var response = await fixture.GameLobbies.PostAcceptChallengeAsync(
+                gameId,
+                challengeId,
+                cancellationToken
+            );
+            return await response.SuccessOrBadRequestAsync(
+                HttpStatusCode.Created,
+                cancellationToken
+            );
+        }
+
+        public async Task<Result<PostGameChallengeResponse>> PostChallengeAsync(
+            GameId gameId,
+            GameLobbySettings challenge,
+            CancellationToken cancellationToken
+        )
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            using var response = await fixture.GameLobbies.PostChallengeAsync(
+                gameId,
+                challenge,
+                cancellationToken
+            );
             return await response.OkOrBadRequestAsync(cancellationToken);
+        }
+
+        public async Task<Result<GameLobbyState.Waiting>> PostGameLobbyAsync(
+            GameLobbySettings settings,
+            CancellationToken cancellationToken
+        )
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            using var response = await fixture.GameLobbies.PostGameLobbyAsync(
+                settings,
+                cancellationToken
+            );
+
+            return await response.SuccessOrBadRequestAsync(
+                HttpStatusCode.Created,
+                cancellationToken
+            );
         }
 
         public async Task<Result<GameCommandResponse>> PostGameCommandAsync(
@@ -26,6 +96,8 @@ public static class ServerFixtureExtensions
             CancellationToken cancellationToken
         )
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             using var response = await fixture.Games.PostGameCommandAsync(
                 request,
                 cancellationToken
@@ -39,6 +111,7 @@ public static class ServerFixtureExtensions
             CancellationToken cancellationToken
         )
         {
+            cancellationToken.ThrowIfCancellationRequested();
             using var response = await fixture.Games.GetGameAsync(gameId, cancellationToken);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             return await response.GetValueAsync(cancellationToken);
@@ -46,6 +119,7 @@ public static class ServerFixtureExtensions
 
         public async Task<GetGamesResponse> GetLiveGamesAsync(CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             using var response = await fixture.Games.GetLiveGamesAsync(cancellationToken);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             return await response.GetValueAsync(cancellationToken);

@@ -1,13 +1,14 @@
 using Tenuki.Protocol;
 using Tenuki.Server;
-using Tenuki.Server.Actions;
 using Tenuki.Server.BackgroundServices;
+using Tenuki.Server.Http.Routes;
 using Tenuki.Server.Messaging;
 using Tenuki.Server.Options;
 using Tenuki.Server.Redis;
-using Tenuki.Server.Routes;
 using Tenuki.Server.SignalR;
 using Tenuki.Services.Application;
+using Tenuki.Services.Application.Game;
+using Tenuki.Services.Application.GameLobby;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,8 +24,8 @@ builder
         options.EnableDetailedErrors = builder.Environment.IsDevelopment();
     })
     .AddJsonProtocol(options => JsonUtils.ConfigureOptions(options.PayloadSerializerOptions));
-builder.Services.AddSingleton<ActionContext>();
 builder.Services.AddSingleton<GameService>();
+builder.Services.AddSingleton<GameLobbyService>();
 builder.Services.AddRedis();
 
 builder
@@ -39,6 +40,7 @@ builder
     .ValidateOnStart();
 builder.Services.AddHostedService<GameNotificationRecoveryBackgroundService>();
 
+builder.Services.AddSingleton<IGameLobbyStore, RedisGameLobbyStore>();
 builder.Services.AddSingleton<IGameStateStore, RedisGameStateStore>();
 builder.Services.AddSingleton<IGameStateTokenCodec, GameStateHmacTokenCodec>();
 builder.Services.AddSingleton<GameChannel>();

@@ -32,6 +32,20 @@ public sealed partial class ArchitectureTests
     }
 
     [Fact]
+    public void Http_Actions_Are_All_Prefixed_With_Http_Verb()
+    {
+        var actionTypes = Types().That().ResideInNamespace("Tenuki.Server.Http.Actions");
+        MethodMembers()
+            .That()
+            .AreDeclaredIn(actionTypes)
+            .And()
+            .ArePublic()
+            .Should()
+            .HaveNameMatching(@"^(Get|Post|Put|Delete|Patch)[A-Z][^(]*\(.*\)$")
+            .Check(ArchitectureFixture.Architecture);
+    }
+
+    [Fact]
     public void SignalR_Api_Must_Not_Have_Functions_Suffixed_With_Async()
     {
         var exemptedDueToNotBeingPartOfApi = MethodMembers()

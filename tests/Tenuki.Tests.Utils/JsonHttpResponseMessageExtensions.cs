@@ -5,23 +5,33 @@ namespace Tenuki.Tests.Utils;
 
 public static class JsonHttpResponseMessageExtensions
 {
-    public static async Task<Result<T>> OkOrBadRequestAsync<T>(
+    public static async Task<Result<T>> SuccessOrBadRequestAsync<T>(
+        this JsonHttpResponseMessage<T> response,
+        HttpStatusCode successStatusCode,
+        CancellationToken cancellationToken
+    )
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (response.StatusCode == successStatusCode)
+        {
+            return Tenuki.Utils.Result.Success(await response.GetValueAsync(cancellationToken));
+        }
+        else if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            return new Failure([.. await response.GetErrorsAsync(cancellationToken)]);
+        }
+
+        throw FailException.ForFailure(
+            $"Expected status code {successStatusCode} or BadRequest, but got {response.StatusCode}"
+        );
+    }
+
+    public static Task<Result<T>> OkOrBadRequestAsync<T>(
         this JsonHttpResponseMessage<T> response,
         CancellationToken cancellationToken
     )
     {
         cancellationToken.ThrowIfCancellationRequested();
-        return response.StatusCode switch
-        {
-            HttpStatusCode.OK => Tenuki.Utils.Result.Success(
-                await response.GetValueAsync(cancellationToken)
-            ),
-            HttpStatusCode.BadRequest => new Failure([
-                .. await response.GetErrorsAsync(cancellationToken),
-            ]),
-            _ => throw FailException.ForFailure(
-                $"Expected status code OK or BadRequest, but got {response.StatusCode}"
-            ),
-        };
+        return response.SuccessOrBadRequestAsync(HttpStatusCode.OK, cancellationToken);
     }
 }

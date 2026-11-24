@@ -1,9 +1,9 @@
 ﻿using Tenuki.Commons;
 using Tenuki.Protocol;
 using Tenuki.Server.BackgroundServices;
-using Tenuki.Server.Models;
 using Tenuki.Server.Tests.Clients;
 using Tenuki.Server.Tests.Fixtures;
+using Tenuki.Services.Logic.GameLobby;
 using Tenuki.Tests.Utils;
 using Xunit;
 
@@ -106,7 +106,7 @@ public sealed class GameNotificationBackgroundServiceTests
 
     private static Task<GameDescription> CreateGameAsync(ServerFixture fixture) =>
         fixture
-            .PostGameAsync(PostGameRequest.Default, TestContext.Current.CancellationToken)
+            .CreateGameAsync(GameLobbySettings.Default, TestContext.Current.CancellationToken)
             .AssertNoFailureAsync(TestContext.Current.CancellationToken);
 
     private static async Task<TenukiClient> StartHubConnectionAndJoinLobbyAsync(

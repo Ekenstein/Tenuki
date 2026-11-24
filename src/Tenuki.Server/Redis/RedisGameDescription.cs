@@ -12,7 +12,7 @@ internal static class RedisGameDescription
 
     internal static HashEntry[] ToEntries(this GameDescription game) =>
         [
-            new(GameIdEntryName, game.Id.Value.ToString()),
+            new(GameIdEntryName, game.Id.ToString()),
             new(RevisionEntryName, game.Revision.ToString(CultureInfo.InvariantCulture)),
             new(StateTokenEntryName, game.StateToken),
         ];

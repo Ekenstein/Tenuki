@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Text.Json.Serialization;
 
-namespace Tenuki.Services.Application;
+namespace Tenuki.Services.Application.Game;
 
 [JsonPolymorphic(InferClosedTypePolymorphism = true)]
 public closed record GameCommandResponse(string StateToken, long Revision)

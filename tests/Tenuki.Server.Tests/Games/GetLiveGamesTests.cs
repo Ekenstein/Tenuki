@@ -1,5 +1,5 @@
-﻿using Tenuki.Server.Models;
-using Tenuki.Server.Tests.Fixtures;
+﻿using Tenuki.Server.Tests.Fixtures;
+using Tenuki.Services.Logic.GameLobby;
 using Tenuki.Tests.Utils;
 using Xunit;
 
@@ -11,7 +11,7 @@ public sealed class GetLiveGamesTests(ServerFixture fixture) : IClassFixture<Ser
     public async Task Game_With_No_Subscribers_Are_Not_Included_In_Live_Games()
     {
         var game = await fixture
-            .PostGameAsync(PostGameRequest.Default, TestContext.Current.CancellationToken)
+            .CreateGameAsync(GameLobbySettings.Default, TestContext.Current.CancellationToken)
             .AssertNoFailureAsync(TestContext.Current.CancellationToken);
         var liveGames = await fixture.GetLiveGamesAsync(TestContext.Current.CancellationToken);
         Assert.DoesNotContain(game, liveGames.Games);
@@ -21,7 +21,7 @@ public sealed class GetLiveGamesTests(ServerFixture fixture) : IClassFixture<Ser
     public async Task Game_With_Subscribers_Is_Included_In_Live_Games()
     {
         var game = await fixture
-            .PostGameAsync(PostGameRequest.Default, TestContext.Current.CancellationToken)
+            .CreateGameAsync(GameLobbySettings.Default, TestContext.Current.CancellationToken)
             .AssertNoFailureAsync(TestContext.Current.CancellationToken);
         await using var client = fixture.CreateHubClient();
         await client.StartAsync(TestContext.Current.CancellationToken);
@@ -34,7 +34,7 @@ public sealed class GetLiveGamesTests(ServerFixture fixture) : IClassFixture<Ser
     public async Task Game_With_A_Disconnected_Subscriber_Is_Not_Included_In_Live_Games()
     {
         var game = await fixture
-            .PostGameAsync(PostGameRequest.Default, TestContext.Current.CancellationToken)
+            .CreateGameAsync(GameLobbySettings.Default, TestContext.Current.CancellationToken)
             .AssertNoFailureAsync(TestContext.Current.CancellationToken);
         await using (var client = fixture.CreateHubClient())
         {
@@ -50,7 +50,7 @@ public sealed class GetLiveGamesTests(ServerFixture fixture) : IClassFixture<Ser
     public async Task Game_With_An_Expired_Subscriber_Is_Not_Included_In_Live_Games()
     {
         var game = await fixture
-            .PostGameAsync(PostGameRequest.Default, TestContext.Current.CancellationToken)
+            .CreateGameAsync(GameLobbySettings.Default, TestContext.Current.CancellationToken)
             .AssertNoFailureAsync(TestContext.Current.CancellationToken);
         await using var client = fixture.CreateHubClient();
         await client.StartAsync(TestContext.Current.CancellationToken);
@@ -67,7 +67,7 @@ public sealed class GetLiveGamesTests(ServerFixture fixture) : IClassFixture<Ser
     public async Task Refreshing_Connection_Presence_Restores_Live_Game()
     {
         var game = await fixture
-            .PostGameAsync(PostGameRequest.Default, TestContext.Current.CancellationToken)
+            .CreateGameAsync(GameLobbySettings.Default, TestContext.Current.CancellationToken)
             .AssertNoFailureAsync(TestContext.Current.CancellationToken);
 
         await using var client = fixture.CreateHubClient();

@@ -1,20 +1,23 @@
 ﻿using System.Collections.Immutable;
+using System.Text.Json.Serialization;
 using Tenuki.Commons;
 
 namespace Tenuki.Services.Logic.GameLobby;
 
-public closed record GameLobbyState(GameId GameId, GameSettings GameSettings)
+[JsonPolymorphic(InferClosedTypePolymorphism = true)]
+public closed record GameLobbyState(GameId GameId, GameLobbySettings Settings, long Revision)
 {
     public sealed record Waiting(
         GameId GameId,
-        GameSettings GameSettings,
-        ImmutableList<GameChallenge> Challenges
-    ) : GameLobbyState(GameId, GameSettings);
+        GameLobbySettings Settings,
+        ImmutableList<GameChallenge> Challenges,
+        long Revision
+    ) : GameLobbyState(GameId, Settings, Revision);
 
     public sealed record Started(
         GameId GameId,
-        GameSettings GameSettings,
-        ColorPreference ColorPreference,
-        ChallengeId AcceptedChallengeId
-    ) : GameLobbyState(GameId, GameSettings);
+        GameLobbySettings Settings,
+        ChallengeId AcceptedChallengeId,
+        long Revision
+    ) : GameLobbyState(GameId, Settings, Revision);
 }
