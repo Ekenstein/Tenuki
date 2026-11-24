@@ -5,6 +5,11 @@
     <Nullable>enable</Nullable>
     <WarningsAsErrors>$(WarningsAsErrors);CS8509;CS8524;CS8846</WarningsAsErrors>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="10.37.0.15768" PrivateAssets="all" />
+  </ItemGroup>
+
   <ItemGroup Condition="'$(MSBuildProjectName)' != 'Tenuki.AppHost'">
     <Using Include="Tenuki.Utils" />
     <Using Include="static Tenuki.Utils.Lists" />

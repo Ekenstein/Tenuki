@@ -103,8 +103,6 @@ public sealed class RedisIncomingMessageReader(
         var (errors, messages) = PartitionStreamEntries(streamEntries);
         if (errors.Count > 0)
         {
-            // TODO: Log errors and move to dead-letter stream.
-
             // XACK so we don't get faulty messages in next read.
             await db.StreamAcknowledgeAsync(
                 streamSettings.StreamKey,

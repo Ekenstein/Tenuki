@@ -1,5 +1,3 @@
-using Projects;
-
 var builder = DistributedApplication.CreateBuilder(args);
 
 var redis = builder.AddRedis("redis").WithDataVolume("tenuki-redis-data");
@@ -13,7 +11,7 @@ var server = builder
     })
     .WaitFor(redis);
 
-var client = builder
+builder
     .AddViteApp(
         name: "client",
         workingDirectory: "../Tenuki.Client",
@@ -23,4 +21,4 @@ var client = builder
     .WithReference(server)
     .WithExternalHttpEndpoints();
 
-builder.Build().Run();
+await builder.Build().RunAsync();

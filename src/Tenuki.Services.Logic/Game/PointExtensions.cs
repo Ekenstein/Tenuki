@@ -6,7 +6,7 @@ internal static class PointExtensions
 {
     internal static IEnumerable<Point> GetAdjacentPoints(this Point stone, GameSettings settings)
     {
-        var allAdjacentPoints = ListOf<Point>(
+        var allAdjacentPoints = ListOf(
             stone with
             {
                 X = stone.X + 1,
@@ -24,9 +24,6 @@ internal static class PointExtensions
                 Y = stone.Y - 1,
             }
         );
-
-        var width = settings.BoardSize;
-        var height = settings.BoardSize;
 
         return allAdjacentPoints.Where(point => !point.IsOutOfBounds(settings));
     }

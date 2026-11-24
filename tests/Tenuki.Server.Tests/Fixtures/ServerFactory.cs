@@ -21,8 +21,6 @@ public sealed class ServerFactory(
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection(config).Build();
-
         builder.ConfigureAppConfiguration(
             (context, configuration) =>
             {

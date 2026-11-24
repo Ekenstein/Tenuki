@@ -16,7 +16,7 @@ public sealed class BootstrapTests
     {
         var config = ServerFactory.ValidConfig.Remove("HmacToken:Secret");
         using var server = new ServerFactory(new FakeTimeProvider(), config);
-        var exception = Assert.Throws<OptionsValidationException>(server.CreateClient);
+        Assert.Throws<OptionsValidationException>(server.CreateClient);
     }
 
     [Fact]
@@ -24,7 +24,7 @@ public sealed class BootstrapTests
     {
         var config = ServerFactory.ValidConfig.Remove("Redis:ConnectionString");
         using var server = new ServerFactory(new FakeTimeProvider(), config);
-        var exception = Assert.Throws<OptionsValidationException>(server.CreateClient);
+        Assert.Throws<OptionsValidationException>(server.CreateClient);
     }
 
     [Fact]

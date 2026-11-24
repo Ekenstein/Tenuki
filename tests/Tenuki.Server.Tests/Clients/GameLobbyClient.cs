@@ -50,18 +50,17 @@ public sealed class GameLobbyClient(HttpClient httpClient)
         return new(response);
     }
 
-    public async Task<JsonHttpResponseMessage<NoContent>> DeleteChallengeAsync(
+    public async Task<HttpResponseMessage> DeleteChallengeAsync(
         GameId gameId,
         ChallengeId challengeId,
         CancellationToken cancellationToken
     )
     {
         cancellationToken.ThrowIfCancellationRequested();
-        var response = await httpClient.DeleteAsync(
+        return await httpClient.DeleteAsync(
             $"api/game-lobbies/{gameId}/challenge/{challengeId}",
             cancellationToken
         );
-        return new(response);
     }
 
     public async Task<JsonHttpResponseMessage<GameDescription>> PostAcceptChallengeAsync(
@@ -77,7 +76,6 @@ public sealed class GameLobbyClient(HttpClient httpClient)
             cancellationToken
         );
 
-        var json = await response.Content.ReadAsStringAsync(cancellationToken);
         return new(response);
     }
 }

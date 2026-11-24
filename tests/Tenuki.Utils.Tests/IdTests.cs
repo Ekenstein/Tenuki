@@ -9,8 +9,7 @@ public sealed class IdTests
     {
         var id = new TestId(value);
 
-        return TestId.TryParse(id.ToString(), null, out var parsed)
-            && parsed == id;
+        return TestId.TryParse(id.ToString(), null, out var parsed) && parsed == id;
     }
 
     private sealed record TestId(Guid Value) : Id<TestId>(Value);

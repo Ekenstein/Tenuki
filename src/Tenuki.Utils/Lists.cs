@@ -22,18 +22,6 @@ public static class Lists
 
     public static ImmutableLinkedList<T> LinkedListOf<T>(params T[] items) => [.. items];
 
-    public static Zipper<T> ToZipper<T>(this ImmutableList<T> ts)
-    {
-        if (ts.IsEmpty)
-        {
-            throw new ArgumentException("Can't convert an empty enumerable to a zipper");
-        }
-        var head = ts[0];
-        var tail = ts.RemoveAt(0);
-
-        return new Zipper<T>([], head, [.. tail]);
-    }
-
     public static ImmutableLinkedList<T> Reverse<T>(
         this ImmutableLinkedList<T> list,
         ImmutableLinkedList<T> result
@@ -75,7 +63,7 @@ public static class Lists
     public static IEnumerable<U> SelectNotNull<T, U>(
         this IEnumerable<T> ts,
         Func<T, U?> selector
-    ) => ts.Select(selector).Where(x => x != null).Select(x => x!);
+    ) => ts.Select(selector).Where(x => !Equals(x, default(U))).Select(x => x!);
 
     public static IEnumerable<ImmutableList<T>> GroupAdjacentBy<T>(
         this IEnumerable<T> source,

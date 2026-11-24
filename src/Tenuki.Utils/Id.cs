@@ -34,4 +34,21 @@ public abstract record Id<TId>(Guid Value) : IParsable<TId>, IComparable<TId>
     public int CompareTo(TId? other) => Value.CompareTo(other?.Value);
 
     public sealed override string ToString() => Value.ToString();
+
+    public static bool operator <(Id<TId>? left, Id<TId>? right) => Compare(left, right) < 0;
+
+    public static bool operator <=(Id<TId>? left, Id<TId>? right) => Compare(left, right) <= 0;
+
+    public static bool operator >(Id<TId>? left, Id<TId>? right) => Compare(left, right) > 0;
+
+    public static bool operator >=(Id<TId>? left, Id<TId>? right) => Compare(left, right) >= 0;
+
+    private static int Compare(Id<TId>? left, Id<TId>? right) =>
+        (left, right) switch
+        {
+            (null, null) => 0,
+            (null, _) => -1,
+            (_, null) => 1,
+            _ => left.Value.CompareTo(right.Value),
+        };
 }

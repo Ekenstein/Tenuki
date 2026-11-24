@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Tenuki.Server.Tests.Fixtures;
 
-public sealed class RedisFixture : IAsyncLifetime, IAsyncDisposable
+public sealed class RedisFixture : IAsyncLifetime
 {
     private InMemoryRedisResult? _redis;
 

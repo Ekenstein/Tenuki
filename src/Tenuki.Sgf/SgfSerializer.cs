@@ -8,7 +8,6 @@ namespace Tenuki.Sgf;
 public static class SgfSerializer
 {
     private const char EscapeChar = '\\';
-    private const char ColonChar = ':';
     private const char RightBracketChar = ']';
     private const char LeftBracketChar = '[';
     private const char SemicolonChar = ';';
@@ -17,8 +16,6 @@ public static class SgfSerializer
 
     private static readonly Parser<char, string> PropertyIdentifier = Uppercase.AtLeastOnceString();
 
-    //private static readonly Parser<char, string> NormalChar = AnyCharExcept(RightBracketChar, EscapeChar).Select(c => c.ToString());
-    //private static readonly Parser<char, string> EscapedChar = Char(EscapeChar).Then(OneOf(ColonChar, EscapeChar, RightBracketChar)).Select(c => c.ToString());
     private static readonly Parser<char, string> EscapedChar = Char(EscapeChar)
         .Then(Any)
         .Select(c => c.ToString());
@@ -41,14 +38,15 @@ public static class SgfSerializer
         .Then(Property.Many())
         .Select(properties => new SgfNode([.. properties]));
 
-    private static Parser<char, SgfGameTree> Tree() =>
-        from _ in Char(LeftParanthesisChar)
-        from sequence in Node.AtLeastOnce()
-        from trees in Tree().Many()
-        from __ in Char(RightParanthesisChar)
-        select new SgfGameTree([.. sequence], [.. trees]);
+    private static readonly Parser<char, SgfGameTree> Tree = Rec(CreateTree);
 
-    public static SgfGameTree Deserialize(string sgf) => Tree().ParseOrThrow(sgf);
+    private static Parser<char, SgfGameTree> CreateTree() =>
+        Char(LeftParanthesisChar)
+            .Then(Node.AtLeastOnce())
+            .Then(Tree.Many(), (sequence, trees) => new SgfGameTree([.. sequence], [.. trees]))
+            .Before(Char(RightParanthesisChar));
+
+    public static SgfGameTree Deserialize(string sgf) => Tree.ParseOrThrow(sgf);
 
     public static string Serialize(SgfGameTree tree)
     {

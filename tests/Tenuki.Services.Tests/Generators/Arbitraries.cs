@@ -137,7 +137,7 @@ public static class Arbitraries
         {
             var command = new GameCommand.Stone(new(), state.NextPlayer, point);
             var outcome = GameLogic.ApplyGameCommand(state, command, now);
-            if (outcome is GameCommandOutcome.Applied applied)
+            if (outcome is GameCommandOutcome.Applied)
             {
                 return outcome.State;
             }

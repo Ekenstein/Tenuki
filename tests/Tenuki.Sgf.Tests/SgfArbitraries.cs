@@ -6,13 +6,13 @@ namespace Tenuki.Sgf.Tests;
 
 public static class SgfArbitraries
 {
-    private static readonly Arbitrary<string> ColorValue = Gen.Elements(["B", "W"])
+    private static readonly Arbitrary<string> ColorValue = Gen.Elements("B", "W")
         .Let(gen =>
         {
             return Arb.From(gen, _ => []);
         });
 
-    private static readonly Arbitrary<string> DoubleValue = Gen.Elements(["1", "2"])
+    private static readonly Arbitrary<string> DoubleValue = Gen.Elements("1", "2")
         .Let(gen =>
         {
             return Arb.From(gen, _ => []);

@@ -2,8 +2,6 @@
 
 namespace Tenuki.Tests.Utils;
 
-public sealed record NoContent;
-
 public sealed class JsonHttpResponseMessage<T>(HttpResponseMessage response) : IDisposable
 {
     private readonly Lazy<Func<CancellationToken, Task<T>>> _lazyResult = new(

@@ -68,11 +68,11 @@ public static class GameLogic
                 unmarkDeadStones
             ),
             GameCommand.AcceptScore acceptScore => AcceptScore(updatedState, acceptScore),
-            GameCommand.ResumePlay resumePlay => ResumePlay(updatedState, resumePlay),
+            GameCommand.ResumePlay => ResumePlay(updatedState),
         };
     }
 
-    private static GameCommandOutcome ResumePlay(GameState state, GameCommand.ResumePlay _)
+    private static GameCommandOutcome ResumePlay(GameState state)
     {
         if (state.Counting == null)
         {
