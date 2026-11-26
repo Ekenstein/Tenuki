@@ -1,4 +1,5 @@
 ﻿using FsCheck.Xunit;
+using Tenuki.Commons;
 using Tenuki.Services.Logic.GameLobby;
 using Tenuki.Services.Tests.Generators;
 
@@ -27,7 +28,8 @@ public sealed class GameLobbyLogicTests
     {
         var (lobby, challenge) = lobbyAndChallenge;
         var result = GameLobbyLogic.AddChallenge(lobby, challenge);
-        return !result.IsSuccess && result.Errors.Contains(GameLobbyErrors.ChallengeAlreadyExist);
+        return !result.IsSuccess
+            && result.Errors.Contains(GameLobbyLogicErrors.ChallengeAlreadyExist);
     }
 
     [Property]
@@ -38,7 +40,8 @@ public sealed class GameLobbyLogicTests
         var (lobby, challenge) = lobbyAndChallenge;
         var result = GameLobbyLogic.AddChallenge(lobby, challenge);
 
-        return !result.IsSuccess && result.Errors.Contains(GameLobbyErrors.ChallengeAlreadyExist);
+        return !result.IsSuccess
+            && result.Errors.Contains(GameLobbyLogicErrors.ChallengeAlreadyExist);
     }
 
     [Property]
@@ -47,7 +50,7 @@ public sealed class GameLobbyLogicTests
     )
     {
         var (lobby, challenge) = lobbyAndChallenge;
-        var result = GameLobbyLogic.RejectChallenge(lobby, challenge.Id);
+        var result = GameLobbyLogic.RemoveChallenge(lobby, challenge.Id);
         return result.TryGetValue(out var updatedLobby)
             && updatedLobby.Challenges.SequenceEqual(
                 lobby.Challenges.Where(x => x.Id != challenge.Id)
@@ -62,8 +65,8 @@ public sealed class GameLobbyLogicTests
     )
     {
         var (lobby, challenge) = lobbyAndChallenge;
-        var result = GameLobbyLogic.RejectChallenge(lobby, challenge.Id);
-        return !result.IsSuccess && result.Errors.Contains(GameLobbyErrors.ChallengeNotFound);
+        var result = GameLobbyLogic.RemoveChallenge(lobby, challenge.Id);
+        return !result.IsSuccess && result.Errors.Contains(GameLobbyLogicErrors.ChallengeNotFound);
     }
 
     [Property]
@@ -73,7 +76,7 @@ public sealed class GameLobbyLogicTests
     {
         var (lobby, challenge) = lobbyAndChallenge;
         var result = GameLobbyLogic.AcceptChallenge(lobby, challenge.Id);
-        return !result.IsSuccess && result.Errors.Contains(GameLobbyErrors.ChallengeNotFound);
+        return !result.IsSuccess && result.Errors.Contains(GameLobbyLogicErrors.ChallengeNotFound);
     }
 
     [Property]
@@ -96,7 +99,7 @@ public sealed class GameLobbyLogicTests
     )
     {
         var result = GameLobbyLogic.AddChallenge(lobby, challenge);
-        return !result.IsSuccess && result.Errors.Contains(GameLobbyErrors.GameAlreadyStarted);
+        return !result.IsSuccess && result.Errors.Contains(GameLobbyLogicErrors.GameAlreadyStarted);
     }
 
     [Property]
@@ -105,8 +108,8 @@ public sealed class GameLobbyLogicTests
         GameChallenge challenge
     )
     {
-        var result = GameLobbyLogic.RejectChallenge(lobby, challenge.Id);
-        return !result.IsSuccess && result.Errors.Contains(GameLobbyErrors.GameAlreadyStarted);
+        var result = GameLobbyLogic.RemoveChallenge(lobby, challenge.Id);
+        return !result.IsSuccess && result.Errors.Contains(GameLobbyLogicErrors.GameAlreadyStarted);
     }
 
     [Property]
@@ -116,6 +119,6 @@ public sealed class GameLobbyLogicTests
     )
     {
         var result = GameLobbyLogic.AcceptChallenge(lobby, challenge.Id);
-        return !result.IsSuccess && result.Errors.Contains(GameLobbyErrors.GameAlreadyStarted);
+        return !result.IsSuccess && result.Errors.Contains(GameLobbyLogicErrors.GameAlreadyStarted);
     }
 }

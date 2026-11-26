@@ -3,8 +3,8 @@ using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using Tenuki.Commons;
 using Tenuki.Server.Messaging;
+using Tenuki.Services.Application.Game;
 using Tenuki.Services.Application.GameLobby;
-using Tenuki.Services.Logic.GameLobby;
 
 namespace Tenuki.Server.Redis;
 
@@ -14,13 +14,13 @@ public sealed class RedisGameLobbyStore(
     IOptions<JsonOptions> jsonOptions
 ) : IGameLobbyStore
 {
-    public async Task<bool> CreateAsync(GameLobbyState lobby, CancellationToken cancellationToken)
+    public async Task<bool> CreateAsync(GameLobbyEntry lobby, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         var db = redis.GetDatabase();
         var transaction = db.CreateTransaction();
 
-        var key = RedisConstants.GameLobbyKey(lobby.GameId);
+        var key = RedisConstants.GameLobbyKey(lobby.State.GameId);
         var gameKeyDoesNotExist = Condition.KeyNotExists(key);
 
         transaction.AddCondition(gameKeyDoesNotExist);
@@ -38,7 +38,7 @@ public sealed class RedisGameLobbyStore(
         return true;
     }
 
-    public async Task<GameLobbyState?> GetAsync(GameId gameId, CancellationToken cancellationToken)
+    public async Task<GameLobbyEntry?> GetAsync(GameId gameId, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         var db = redis.GetDatabase();
@@ -49,11 +49,11 @@ public sealed class RedisGameLobbyStore(
             return null;
         }
 
-        return RedisGameLobbyState.FromEntries(hashEntries, jsonOptions.Value.SerializerOptions);
+        return RedisGameLobbyEntry.FromEntries(hashEntries, jsonOptions.Value.SerializerOptions);
     }
 
     public async Task<bool> UpdateAsync(
-        GameLobbyState lobby,
+        GameLobbyEntry lobby,
         long expectedRevision,
         CancellationToken cancellationToken
     )
@@ -62,7 +62,12 @@ public sealed class RedisGameLobbyStore(
         var db = redis.GetDatabase();
         var transaction = db.CreateTransaction();
 
-        var updatedGameLobby = UpdateGameLobbyAsync(transaction, lobby, expectedRevision);
+        var updatedGameLobby = UpdateGameLobbyAsync(
+            transaction,
+            lobby,
+            expectedRevision,
+            cancellationToken
+        );
 
         if (!await transaction.ExecuteAsync().WaitAsync(cancellationToken))
         {
@@ -75,26 +80,37 @@ public sealed class RedisGameLobbyStore(
 
     private Task UpdateGameLobbyAsync(
         ITransaction transaction,
-        GameLobbyState lobby,
-        long expectedRevision
+        GameLobbyEntry lobby,
+        long expectedRevision,
+        CancellationToken cancellationToken
     )
     {
-        var key = RedisConstants.GameLobbyKey(lobby.GameId);
+        cancellationToken.ThrowIfCancellationRequested();
+        var key = RedisConstants.GameLobbyKey(lobby.State.GameId);
         var keyExist = Condition.KeyExists(key);
         var revisionEqualsExpectedRevision = Condition.HashEqual(
             key,
-            RedisGameLobbyState.RevisionEntryName,
+            RedisGameLobbyEntry.RevisionEntryName,
             expectedRevision
         );
         transaction.AddCondition(keyExist);
         transaction.AddCondition(revisionEqualsExpectedRevision);
 
-        return transaction.HashSetAsync(key, lobby.ToEntries(jsonOptions.Value.SerializerOptions));
+        return Task.WhenAll(
+            transaction.QueueAsync(
+                new IncomingMessage.GameLobbyChanged(lobby.State),
+                streamSettings,
+                jsonOptions.Value.SerializerOptions,
+                cancellationToken
+            ),
+            transaction.HashSetAsync(key, lobby.ToEntries(jsonOptions.Value.SerializerOptions))
+        );
     }
 
-    public Task<bool> StartAsync(
-        GameLobbyState.Started lobby,
+    public async Task<bool> StartAsync(
+        GameLobbyEntry lobby,
         GameDescription game,
+        GameOwnership ownership,
         long expectedRevision,
         CancellationToken cancellationToken
     )
@@ -104,26 +120,18 @@ public sealed class RedisGameLobbyStore(
         var db = redis.GetDatabase();
         var transaction = db.CreateTransaction();
 
-        return StartAsync(transaction, lobby, game, expectedRevision, cancellationToken);
-    }
-
-    private async Task<bool> StartAsync(
-        ITransaction transaction,
-        GameLobbyState.Started lobby,
-        GameDescription game,
-        long expectedRevision,
-        CancellationToken cancellationToken
-    )
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-
-        var gameKey = RedisConstants.GameKey(lobby.GameId);
+        var gameKey = RedisConstants.GameKey(lobby.State.GameId);
 
         var gameKeyDoesNotExistCondition = Condition.KeyNotExists(gameKey);
 
         transaction.AddCondition(gameKeyDoesNotExistCondition);
 
-        var updateGameLobby = UpdateGameLobbyAsync(transaction, lobby, expectedRevision);
+        var updateGameLobby = UpdateGameLobbyAsync(
+            transaction,
+            lobby,
+            expectedRevision,
+            cancellationToken
+        );
         var addGame = transaction.HashSetAsync(gameKey, game.ToEntries());
         var notifyGameAdded = transaction.QueueAsync(
             new IncomingMessage.GameAdded(game),

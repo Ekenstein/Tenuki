@@ -1,9 +1,9 @@
-﻿using Tenuki.Server.Tests.Fixtures;
-using Tenuki.Services.Logic.GameLobby;
+﻿using Tenuki.Commons;
+using Tenuki.Server.Tests.Fixtures;
 using Tenuki.Tests.Utils;
 using Xunit;
 
-namespace Tenuki.Server.Tests.Games;
+namespace Tenuki.Server.Tests.Http.Games;
 
 public sealed class GetLiveGamesTests(ServerFixture fixture) : IClassFixture<ServerFixture>
 {

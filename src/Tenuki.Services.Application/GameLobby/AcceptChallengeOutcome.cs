@@ -12,4 +12,6 @@ public closed record AcceptChallengeOutcome
     public sealed record Created(GameDescription Game) : AcceptChallengeOutcome;
 
     public sealed record Conflict : AcceptChallengeOutcome;
+
+    public sealed record Forbidden : AcceptChallengeOutcome;
 }

@@ -3,7 +3,6 @@ using Tenuki.Protocol;
 using Tenuki.Server.BackgroundServices;
 using Tenuki.Server.Tests.Clients;
 using Tenuki.Server.Tests.Fixtures;
-using Tenuki.Services.Logic.GameLobby;
 using Tenuki.Tests.Utils;
 using Xunit;
 
@@ -95,13 +94,21 @@ public sealed class GameNotificationBackgroundServiceTests
             tick,
             TestContext.Current.CancellationToken
         );
-        Assert.NotNull(
-            await client.LobbyMessages.WaitForMessageAsync<LobbyMessage.GamesAdded>(
-                message => games.All(game => message.Games.Contains(game)),
-                TimeSpan.FromSeconds(5),
-                TestContext.Current.CancellationToken
-            )
+
+        var remaining = games.ToHashSet();
+
+        var received = await client.LobbyMessages.WaitForMessageAsync<LobbyMessage.GamesAdded>(
+            message =>
+            {
+                remaining.ExceptWith(message.Games);
+                return remaining.Count == 0;
+            },
+            TimeSpan.FromSeconds(5),
+            TestContext.Current.CancellationToken
         );
+
+        Assert.NotNull(received);
+        Assert.Empty(remaining);
     }
 
     private static Task<GameDescription> CreateGameAsync(ServerFixture fixture) =>

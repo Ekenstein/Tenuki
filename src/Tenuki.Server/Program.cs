@@ -27,6 +27,7 @@ builder
 builder.Services.AddSingleton<GameService>();
 builder.Services.AddSingleton<GameLobbyService>();
 builder.Services.AddRedis();
+builder.Services.AddSingleton(Random.Shared);
 
 builder
     .Services.AddOptions<GameNotificationOptions>()
@@ -50,6 +51,11 @@ builder.Services.AddSingleton<IMessageBroadcaster<GameMessage>>(services =>
 builder.Services.AddSingleton<LobbyChannel>();
 builder.Services.AddSingleton<IMessageBroadcaster<LobbyMessage>>(services =>
     services.GetRequiredService<LobbyChannel>()
+);
+
+builder.Services.AddSingleton<GameLobbyChannel>();
+builder.Services.AddSingleton<IMessageBroadcaster<GameLobbyMessage>>(services =>
+    services.GetRequiredService<GameLobbyChannel>()
 );
 
 builder

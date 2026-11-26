@@ -52,7 +52,7 @@ internal static class BoardPositionExtensions
                 (board, enemyStone) => CaptureGroupIfDead(board, enemyStone, settings)
             );
 
-            if (!updatedBoardAfterCaptures.HasLiberties(stone, settings))
+            if (!updatedBoardAfterCaptures.HasStoneLiberties(stone, settings))
             {
                 return new Failure([GameLogicErrors.Suicide]);
             }
@@ -114,7 +114,7 @@ internal static class BoardPositionExtensions
                 Hash = stones.Aggregate(board.Hash, (hash, stone) => hash ^ Zobrist.Hash(stone)),
             };
 
-        private bool HasLiberties(Stone stone, GameSettings settings) =>
+        private bool HasStoneLiberties(Stone stone, GameSettings settings) =>
             board.GetGroup(stone, settings).HasLiberties;
 
         private Group GetGroup(Stone stone, GameSettings settings)

@@ -9,7 +9,8 @@ public closed record AddChallengeOutcome
 
     public sealed record Conflict : AddChallengeOutcome;
 
-    public sealed record Added(ChallengeId ChallengeId) : AddChallengeOutcome;
+    public sealed record Added(ChallengeId ChallengeId, SecretToken OwnerToken)
+        : AddChallengeOutcome;
 
     public sealed record Failure(ImmutableList<Error> Errors) : AddChallengeOutcome;
 }

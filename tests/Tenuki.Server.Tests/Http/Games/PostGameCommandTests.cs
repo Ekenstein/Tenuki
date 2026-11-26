@@ -7,11 +7,10 @@ using Tenuki.Server.Http.Models;
 using Tenuki.Server.Tests.Fixtures;
 using Tenuki.Services.Application.Game;
 using Tenuki.Services.Logic.Game;
-using Tenuki.Services.Logic.GameLobby;
 using Tenuki.Tests.Utils;
 using Xunit;
 
-namespace Tenuki.Server.Tests.Games;
+namespace Tenuki.Server.Tests.Http.Games;
 
 public sealed class PostGameCommandTests(ServerFixture fixture) : IClassFixture<ServerFixture>
 {

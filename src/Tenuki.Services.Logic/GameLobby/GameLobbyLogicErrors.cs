@@ -1,16 +1,16 @@
 ﻿namespace Tenuki.Services.Logic.GameLobby;
 
-internal static class GameLobbyErrors
+public static class GameLobbyLogicErrors
 {
-    internal static readonly Error GameAlreadyStarted = new(
+    public static readonly Error GameAlreadyStarted = new(
         nameof(GameAlreadyStarted),
         "The game has already started."
     );
-    internal static readonly Error ChallengeNotFound = new(
+    public static readonly Error ChallengeNotFound = new(
         nameof(ChallengeNotFound),
         "The challenge does not exist."
     );
-    internal static readonly Error ChallengeAlreadyExist = new(
+    public static readonly Error ChallengeAlreadyExist = new(
         nameof(ChallengeAlreadyExist),
         "The challenge already exist."
     );

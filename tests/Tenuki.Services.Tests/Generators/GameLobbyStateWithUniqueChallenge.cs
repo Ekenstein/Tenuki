@@ -1,4 +1,4 @@
-﻿using Tenuki.Services.Logic.GameLobby;
+﻿using Tenuki.Commons;
 
 namespace Tenuki.Services.Tests.Generators;
 

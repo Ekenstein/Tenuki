@@ -14,8 +14,11 @@ public sealed class TenukiClient : IAsyncDisposable
     private readonly HubConnection _hubConnection;
     private readonly IDisposable _gameSubscription;
     private readonly IDisposable _lobbySubscription;
+    private readonly IDisposable _gameLobbySubscription;
+
     public ReceivedMessages<GameMessage> GameMessages { get; } = new();
     public ReceivedMessages<LobbyMessage> LobbyMessages { get; } = new();
+    public ReceivedMessages<GameLobbyMessage> GameLobbyMessages { get; } = new();
 
     public string ConnectionId =>
         _hubConnection.ConnectionId
@@ -32,6 +35,10 @@ public sealed class TenukiClient : IAsyncDisposable
             nameof(ITenukiClient.LobbyMessage),
             message => LobbyMessages.OnMessageReceivedAsync(message).AsTask()
         );
+        _gameLobbySubscription = hubConnection.On<GameLobbyMessage>(
+            nameof(ITenukiClient.GameLobbyMessage),
+            message => GameLobbyMessages.OnMessageReceivedAsync(message).AsTask()
+        );
     }
 
     public Task StartAsync(CancellationToken cancellationToken) =>
@@ -43,10 +50,14 @@ public sealed class TenukiClient : IAsyncDisposable
     public Task JoinLobbyAsync(CancellationToken cancellationToken) =>
         _hubConnection.InvokeAsync(nameof(TenukiHub.JoinLobby), cancellationToken);
 
+    public Task JoinGameLobbyAsync(GameId gameId, CancellationToken cancellationToken) =>
+        _hubConnection.InvokeAsync(nameof(TenukiHub.JoinGameLobby), gameId, cancellationToken);
+
     public async ValueTask DisposeAsync()
     {
         _gameSubscription.Dispose();
         _lobbySubscription.Dispose();
+        _gameLobbySubscription.Dispose();
 
         await _hubConnection.DisposeAsync();
     }

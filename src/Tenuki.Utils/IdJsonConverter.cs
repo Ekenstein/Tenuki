@@ -18,6 +18,21 @@ internal sealed class IdJsonConverter<TId> : JsonConverter<TId>
 
     public override void Write(Utf8JsonWriter writer, TId value, JsonSerializerOptions options)
     {
-        writer.WriteStringValue(value.Value.ToString());
+        writer.WriteStringValue(value.ToString());
     }
+
+    public override TId ReadAsPropertyName(
+        ref Utf8JsonReader reader,
+        Type typeToConvert,
+        JsonSerializerOptions options
+    ) =>
+        Id<TId>.TryParse(reader.GetString(), null, out var id)
+            ? id
+            : throw new JsonException($"Invalid {typeof(TId).Name}.");
+
+    public override void WriteAsPropertyName(
+        Utf8JsonWriter writer,
+        TId value,
+        JsonSerializerOptions options
+    ) => writer.WritePropertyName(value.ToString());
 }

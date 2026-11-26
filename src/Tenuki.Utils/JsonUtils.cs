@@ -16,6 +16,7 @@ public static class JsonUtils
     {
         options.Converters.Add(new JsonStringEnumConverter());
         options.Converters.Add(new IdJsonConverterFactory());
+        options.Converters.Add(new SecretTokenHashJsonConverter());
         options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
     }
 }

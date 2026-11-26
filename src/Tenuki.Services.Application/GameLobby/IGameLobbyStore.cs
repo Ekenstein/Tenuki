@@ -1,20 +1,21 @@
 ﻿using Tenuki.Commons;
-using Tenuki.Services.Logic.GameLobby;
+using Tenuki.Services.Application.Game;
 
 namespace Tenuki.Services.Application.GameLobby;
 
 public interface IGameLobbyStore
 {
-    Task<GameLobbyState?> GetAsync(GameId gameId, CancellationToken cancellationToken);
-    Task<bool> CreateAsync(GameLobbyState lobby, CancellationToken cancellationToken);
+    Task<GameLobbyEntry?> GetAsync(GameId gameId, CancellationToken cancellationToken);
+    Task<bool> CreateAsync(GameLobbyEntry lobby, CancellationToken cancellationToken);
     Task<bool> UpdateAsync(
-        GameLobbyState lobby,
+        GameLobbyEntry lobby,
         long expectedRevision,
         CancellationToken cancellationToken
     );
     Task<bool> StartAsync(
-        GameLobbyState.Started lobby,
+        GameLobbyEntry lobby,
         GameDescription game,
+        GameOwnership ownership,
         long expectedRevision,
         CancellationToken cancellationToken
     );

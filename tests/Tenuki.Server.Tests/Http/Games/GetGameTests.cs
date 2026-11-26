@@ -3,7 +3,7 @@ using Tenuki.Commons;
 using Tenuki.Server.Tests.Fixtures;
 using Xunit;
 
-namespace Tenuki.Server.Tests.Games;
+namespace Tenuki.Server.Tests.Http.Games;
 
 public sealed class GetGameTests(ServerFixture fixture) : IClassFixture<ServerFixture>
 {

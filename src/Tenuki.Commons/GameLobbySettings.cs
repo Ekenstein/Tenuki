@@ -1,6 +1,4 @@
-﻿using Tenuki.Commons;
-
-namespace Tenuki.Services.Logic.GameLobby;
+﻿namespace Tenuki.Commons;
 
 public sealed record GameLobbySettings(GameSettings GameSettings, ColorPreference ColorPreference)
 {

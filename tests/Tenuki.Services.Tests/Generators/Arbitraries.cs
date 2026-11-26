@@ -4,7 +4,6 @@ using FsCheck.Fluent;
 using Tenuki.Commons;
 using Tenuki.Protocol;
 using Tenuki.Services.Logic.Game;
-using Tenuki.Services.Logic.GameLobby;
 
 namespace Tenuki.Services.Tests.Generators;
 

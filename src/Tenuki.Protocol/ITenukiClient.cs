@@ -4,4 +4,5 @@ public interface ITenukiClient
 {
     Task GameMessage(GameMessage message);
     Task LobbyMessage(LobbyMessage message);
+    Task GameLobbyMessage(GameLobbyMessage message);
 }

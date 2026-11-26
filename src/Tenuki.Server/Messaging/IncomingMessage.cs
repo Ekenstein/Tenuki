@@ -16,4 +16,6 @@ public closed record IncomingMessage
         GameDescription Game,
         ImmutableList<GameCommand> CommittedCommands
     ) : IncomingMessage;
+
+    public sealed record GameLobbyChanged(GameLobbyState GameLobby) : IncomingMessage;
 }

@@ -16,14 +16,17 @@ public static class IncomingMessageBatcher
         {
             var outgoingMessages = batch[0].Message switch
             {
-                IncomingMessage.GameAdded _ => BatchAddedGames(
+                IncomingMessage.GameAdded => BatchAddedGames(
                     batch.Select(x => x.Narrow<IncomingMessage.GameAdded>())
                 ),
-                IncomingMessage.GameRemoved _ => BatchRemovedGames(
+                IncomingMessage.GameRemoved => BatchRemovedGames(
                     batch.Select(x => x.Narrow<IncomingMessage.GameRemoved>())
                 ),
-                IncomingMessage.GameChanged _ => BatchChangedGames(
+                IncomingMessage.GameChanged => BatchChangedGames(
                     batch.Select(x => x.Narrow<IncomingMessage.GameChanged>())
+                ),
+                IncomingMessage.GameLobbyChanged => BatchChangedGameLobbies(
+                    batch.Select(x => x.Narrow<IncomingMessage.GameLobbyChanged>())
                 ),
             };
 
@@ -52,6 +55,23 @@ public static class IncomingMessageBatcher
             new LobbyMessage.GamesRemoved([.. removedGames.Select(x => x.Message.GameId)]),
             [.. removedGames.Select(x => x.Id)]
         );
+    }
+
+    private static IEnumerable<OutgoingMessage<TId>> BatchChangedGameLobbies<TId>(
+        IEnumerable<MessageEnvelope<TId, IncomingMessage.GameLobbyChanged>> messages
+    )
+    {
+        foreach (var message in messages)
+        {
+            var (id, incomingMessage) = message;
+            var outgoingMessage = new GameLobbyMessage.StateUpdated(
+                incomingMessage.GameLobby.GameId,
+                incomingMessage.GameLobby.Revision,
+                incomingMessage.GameLobby
+            );
+
+            yield return new OutgoingMessage<TId>.GameLobby(outgoingMessage, [id]);
+        }
     }
 
     private static IEnumerable<OutgoingMessage<TId>> BatchChangedGames<TId>(

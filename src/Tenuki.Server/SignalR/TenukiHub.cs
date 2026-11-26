@@ -7,7 +7,8 @@ namespace Tenuki.Server.SignalR;
 public sealed class TenukiHub(
     ConnectionRegistry connectionRegistry,
     GameChannel gameChannel,
-    LobbyChannel lobbyChannel
+    LobbyChannel lobbyChannel,
+    GameLobbyChannel gameLobbyChannel
 ) : Hub<ITenukiClient>
 {
     public override async Task OnConnectedAsync()
@@ -27,6 +28,12 @@ public sealed class TenukiHub(
 
     public Task LeaveLobby(CancellationToken cancellationToken) =>
         lobbyChannel.LeaveLobbyAsync(Context.ConnectionId, cancellationToken);
+
+    public Task JoinGameLobby(GameId gameId, CancellationToken cancellationToken) =>
+        gameLobbyChannel.JoinGameLobbyAsync(gameId, Context.ConnectionId, cancellationToken);
+
+    public Task LeaveGameLobby(GameId gameId, CancellationToken cancellationToken) =>
+        gameLobbyChannel.LeaveGameLobbyAsync(gameId, Context.ConnectionId, cancellationToken);
 
     public Task JoinGame(GameId gameId, CancellationToken cancellationToken) =>
         gameChannel.JoinGameAsync(gameId, Context.ConnectionId, cancellationToken);

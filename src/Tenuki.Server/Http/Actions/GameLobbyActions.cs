@@ -1,16 +1,16 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Tenuki.Commons;
+using Tenuki.Server.Http.Bindings;
 using Tenuki.Server.Http.Models;
 using Tenuki.Services.Application.GameLobby;
-using Tenuki.Services.Logic.GameLobby;
 
 namespace Tenuki.Server.Http.Actions;
 
 public static class GameLobbyActions
 {
     public static async Task<
-        Results<CreatedAtRoute<GameLobbyState.Waiting>, BadRequest<ImmutableList<Error>>, Conflict>
+        Results<CreatedAtRoute<PostGameLobbyResponse>, BadRequest<ImmutableList<Error>>, Conflict>
     > PostGameLobbyAsync(
         GameLobbySettings request,
         GameLobbyService service,
@@ -22,9 +22,9 @@ public static class GameLobbyActions
         return outcome switch
         {
             CreateGameLobbyOutcome.Created created => TypedResults.CreatedAtRoute(
-                created.GameLobby,
+                new PostGameLobbyResponse(created.Id, created.OwnerToken.ToHexString()),
                 routeName: Endpoints.GetGameLobby,
-                routeValues: new { gameId = created.GameLobby.GameId }
+                routeValues: new { gameId = created.Id }
             ),
             CreateGameLobbyOutcome.Conflict => TypedResults.Conflict(),
             CreateGameLobbyOutcome.Failure failure => TypedResults.BadRequest(failure.Errors),
@@ -62,10 +62,11 @@ public static class GameLobbyActions
     {
         cancellationToken.ThrowIfCancellationRequested();
         var outcome = await service.AddChallengeAsync(gameId, challenge, cancellationToken);
+
         return outcome switch
         {
             AddChallengeOutcome.Added added => TypedResults.Ok(
-                new PostGameChallengeResponse(added.ChallengeId)
+                new PostGameChallengeResponse(added.ChallengeId, added.OwnerToken.ToHexString())
             ),
             AddChallengeOutcome.Conflict => TypedResults.Conflict(),
             AddChallengeOutcome.NotFound notFound => TypedResults.NotFound(notFound.GameId),
@@ -74,22 +75,44 @@ public static class GameLobbyActions
     }
 
     public static async Task<
-        Results<NoContent, BadRequest<ImmutableList<Error>>, NotFound<GameId>, Conflict>
+        Results<
+            NoContent,
+            BadRequest<ImmutableList<Error>>,
+            NotFound<GameId>,
+            Conflict,
+            UnauthorizedHttpResult,
+            StatusCodeHttpResult
+        >
     > DeleteChallengeAsync(
         GameId gameId,
         ChallengeId challengeId,
+        OwnershipCredentials? credentials,
         GameLobbyService service,
         CancellationToken cancellationToken
     )
     {
         cancellationToken.ThrowIfCancellationRequested();
-        var outcome = await service.RejectChallengeAsync(gameId, challengeId, cancellationToken);
+
+        if (credentials == null)
+        {
+            return TypedResults.Unauthorized();
+        }
+
+        var outcome = await service.RemoveChallengeAsync(
+            gameId,
+            challengeId,
+            credentials.Token,
+            cancellationToken
+        );
         return outcome switch
         {
-            RejectChallengeOutcome.Applied => TypedResults.NoContent(),
-            RejectChallengeOutcome.Conflict => TypedResults.Conflict(),
-            RejectChallengeOutcome.NotFound notFound => TypedResults.NotFound(notFound.GameId),
-            RejectChallengeOutcome.Failure failure => TypedResults.BadRequest(failure.Errors),
+            RemoveChallengeOutcome.Applied => TypedResults.NoContent(),
+            RemoveChallengeOutcome.Conflict => TypedResults.Conflict(),
+            RemoveChallengeOutcome.NotFound notFound => TypedResults.NotFound(notFound.GameId),
+            RemoveChallengeOutcome.Failure failure => TypedResults.BadRequest(failure.Errors),
+            RemoveChallengeOutcome.Forbidden => TypedResults.StatusCode(
+                StatusCodes.Status403Forbidden
+            ),
         };
     }
 
@@ -98,17 +121,31 @@ public static class GameLobbyActions
             CreatedAtRoute<GameDescription>,
             BadRequest<ImmutableList<Error>>,
             NotFound<GameId>,
-            Conflict
+            Conflict,
+            UnauthorizedHttpResult,
+            StatusCodeHttpResult
         >
     > PostAcceptChallengeAsync(
         GameId gameId,
         ChallengeId challengeId,
         GameLobbyService service,
+        OwnershipCredentials? credentials,
         CancellationToken cancellationToken
     )
     {
         cancellationToken.ThrowIfCancellationRequested();
-        var outcome = await service.AcceptChallengeAsync(gameId, challengeId, cancellationToken);
+
+        if (credentials == null)
+        {
+            return TypedResults.Unauthorized();
+        }
+
+        var outcome = await service.AcceptChallengeAsync(
+            gameId,
+            challengeId,
+            credentials.Token,
+            cancellationToken
+        );
         return outcome switch
         {
             AcceptChallengeOutcome.Created created => TypedResults.CreatedAtRoute(
@@ -119,6 +156,9 @@ public static class GameLobbyActions
             AcceptChallengeOutcome.Conflict => TypedResults.Conflict(),
             AcceptChallengeOutcome.NotFound notFound => TypedResults.NotFound(notFound.GameId),
             AcceptChallengeOutcome.Failure failure => TypedResults.BadRequest(failure.Errors),
+            AcceptChallengeOutcome.Forbidden => TypedResults.StatusCode(
+                StatusCodes.Status403Forbidden
+            ),
         };
     }
 }

@@ -2,7 +2,6 @@
 using Tenuki.Commons;
 using Tenuki.Server.Http.Models;
 using Tenuki.Services.Application.Game;
-using Tenuki.Services.Logic.GameLobby;
 using Tenuki.Tests.Utils;
 using Xunit;
 
@@ -25,7 +24,7 @@ public static class ServerFixtureExtensions
             }
 
             var challenge = await fixture.PostChallengeAsync(
-                lobbyState.GameId,
+                lobbyState.Id,
                 settings,
                 cancellationToken
             );
@@ -35,8 +34,9 @@ public static class ServerFixtureExtensions
             }
 
             return await fixture.PostAcceptChallengeAsync(
-                lobbyState.GameId,
+                lobbyState.Id,
                 challengeState.ChallengeId,
+                lobbyState.OwnerToken,
                 cancellationToken
             );
         }
@@ -44,6 +44,7 @@ public static class ServerFixtureExtensions
         public async Task<Result<GameDescription>> PostAcceptChallengeAsync(
             GameId gameId,
             ChallengeId challengeId,
+            string? ownerToken,
             CancellationToken cancellationToken
         )
         {
@@ -51,6 +52,7 @@ public static class ServerFixtureExtensions
             using var response = await fixture.GameLobbies.PostAcceptChallengeAsync(
                 gameId,
                 challengeId,
+                ownerToken,
                 cancellationToken
             );
             return await response.SuccessOrBadRequestAsync(
@@ -74,7 +76,7 @@ public static class ServerFixtureExtensions
             return await response.OkOrBadRequestAsync(cancellationToken);
         }
 
-        public async Task<Result<GameLobbyState.Waiting>> PostGameLobbyAsync(
+        public async Task<Result<PostGameLobbyResponse>> PostGameLobbyAsync(
             GameLobbySettings settings,
             CancellationToken cancellationToken
         )

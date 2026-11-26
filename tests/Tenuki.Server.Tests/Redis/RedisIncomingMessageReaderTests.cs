@@ -42,6 +42,7 @@ public sealed class RedisIncomingMessageReaderTests(RedisFixture fixture)
 
         var lobbyBroadcaster = new Mock<IMessageBroadcaster<LobbyMessage>>();
         var gameBroadcaster = new Mock<IMessageBroadcaster<GameMessage>>();
+        var gameLobbyBroadcaster = new Mock<IMessageBroadcaster<GameLobbyMessage>>();
 
         // First broadcast fails.
         lobbyBroadcaster
@@ -53,7 +54,8 @@ public sealed class RedisIncomingMessageReaderTests(RedisFixture fixture)
 
         var dispatcher = new IncomingMessageDispatcher(
             lobbyBroadcaster.Object,
-            gameBroadcaster.Object
+            gameBroadcaster.Object,
+            gameLobbyBroadcaster.Object
         );
 
         var reader = new RedisIncomingMessageReader(
@@ -115,10 +117,12 @@ public sealed class RedisIncomingMessageReaderTests(RedisFixture fixture)
 
         var lobbyBroadcaster = new Mock<IMessageBroadcaster<LobbyMessage>>();
         var gameBroadcaster = new Mock<IMessageBroadcaster<GameMessage>>();
+        var gameLobbyBroadcaster = new Mock<IMessageBroadcaster<GameLobbyMessage>>();
 
         var dispatcher = new IncomingMessageDispatcher(
             lobbyBroadcaster.Object,
-            gameBroadcaster.Object
+            gameBroadcaster.Object,
+            gameLobbyBroadcaster.Object
         );
 
         var streamSettings = new RedisStreamSettings(

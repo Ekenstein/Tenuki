@@ -2,4 +2,4 @@
 
 namespace Tenuki.Server.Http.Models;
 
-public sealed record PostGameLobbyResponse(GameId Id);
+public sealed record PostGameLobbyResponse(GameId Id, string OwnerToken);

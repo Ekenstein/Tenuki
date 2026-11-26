@@ -28,7 +28,7 @@ public static class GameLobbyLogic
         state switch
         {
             GameLobbyState.Waiting waiting => AddChallenge(waiting, challenge),
-            GameLobbyState.Started => new Failure([GameLobbyErrors.GameAlreadyStarted]),
+            GameLobbyState.Started => new Failure([GameLobbyLogicErrors.GameAlreadyStarted]),
         };
 
     private static Result<GameLobbyState.Waiting> AddChallenge(
@@ -38,7 +38,7 @@ public static class GameLobbyLogic
     {
         if (state.Challenges.Any(x => x.Id == challenge.Id))
         {
-            return new Failure([GameLobbyErrors.ChallengeAlreadyExist]);
+            return new Failure([GameLobbyLogicErrors.ChallengeAlreadyExist]);
         }
 
         var errors = challenge.ProposedSettings.GameSettings.Validate().ToImmutableList();
@@ -56,17 +56,17 @@ public static class GameLobbyLogic
         return Result.Success(updatedState);
     }
 
-    public static Result<GameLobbyState.Waiting> RejectChallenge(
+    public static Result<GameLobbyState.Waiting> RemoveChallenge(
         GameLobbyState state,
         ChallengeId challengeId
     ) =>
         state switch
         {
-            GameLobbyState.Waiting waiting => RejectChallenge(waiting, challengeId),
-            GameLobbyState.Started => new Failure([GameLobbyErrors.GameAlreadyStarted]),
+            GameLobbyState.Waiting waiting => RemoveChallenge(waiting, challengeId),
+            GameLobbyState.Started => new Failure([GameLobbyLogicErrors.GameAlreadyStarted]),
         };
 
-    private static Result<GameLobbyState.Waiting> RejectChallenge(
+    private static Result<GameLobbyState.Waiting> RemoveChallenge(
         GameLobbyState.Waiting state,
         ChallengeId challengeId
     )
@@ -79,7 +79,7 @@ public static class GameLobbyLogic
 
         if (updatedState.Challenges.Count == state.Challenges.Count)
         {
-            return new Failure([GameLobbyErrors.ChallengeNotFound]);
+            return new Failure([GameLobbyLogicErrors.ChallengeNotFound]);
         }
 
         return Result.Success(updatedState);
@@ -92,7 +92,7 @@ public static class GameLobbyLogic
         state switch
         {
             GameLobbyState.Waiting waiting => AcceptChallenge(waiting, challengeId),
-            GameLobbyState.Started => new Failure([GameLobbyErrors.GameAlreadyStarted]),
+            GameLobbyState.Started => new Failure([GameLobbyLogicErrors.GameAlreadyStarted]),
         };
 
     private static Result<GameLobbyState.Started> AcceptChallenge(
@@ -103,7 +103,7 @@ public static class GameLobbyLogic
         var challenge = state.Challenges.SingleOrDefault(x => x.Id == challengeId);
         if (challenge == null)
         {
-            return new Failure([GameLobbyErrors.ChallengeNotFound]);
+            return new Failure([GameLobbyLogicErrors.ChallengeNotFound]);
         }
 
         return Result.Success(

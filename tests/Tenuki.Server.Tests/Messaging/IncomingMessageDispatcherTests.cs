@@ -13,7 +13,12 @@ public sealed class IncomingMessageDispatcherTests
     {
         var lobby = new Mock<IMessageBroadcaster<LobbyMessage>>();
         var games = new Mock<IMessageBroadcaster<GameMessage>>();
-        var dispatcher = new IncomingMessageDispatcher(lobby.Object, games.Object);
+        var gameLobbies = new Mock<IMessageBroadcaster<GameLobbyMessage>>();
+        var dispatcher = new IncomingMessageDispatcher(
+            lobby.Object,
+            games.Object,
+            gameLobbies.Object
+        );
 
         await dispatcher
             .DispatchAsync<Guid>([], TestContext.Current.CancellationToken)
@@ -55,7 +60,22 @@ public sealed class IncomingMessageDispatcherTests
                 )
                 .Returns(completion.Task);
         });
-        var dispatcher = new IncomingMessageDispatcher(lobby.Object, games.Object);
+
+        var gameLobbies = new Mock<IMessageBroadcaster<GameLobbyMessage>>().Apply(x =>
+        {
+            x.Setup(x =>
+                    x.BroadcastAsync(
+                        It.IsAny<GameLobbyMessage>(),
+                        TestContext.Current.CancellationToken
+                    )
+                )
+                .Returns(completion.Task);
+        });
+        var dispatcher = new IncomingMessageDispatcher(
+            lobby.Object,
+            games.Object,
+            gameLobbies.Object
+        );
 
         await using var enumerator = dispatcher
             .DispatchAsync([message], TestContext.Current.CancellationToken)

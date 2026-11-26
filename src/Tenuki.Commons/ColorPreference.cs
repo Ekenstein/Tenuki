@@ -2,7 +2,7 @@
 
 public enum ColorPreference
 {
-    Black,
-    White,
+    OwnerTakesBlack,
+    OwnerTakesWhite,
     Random,
 }

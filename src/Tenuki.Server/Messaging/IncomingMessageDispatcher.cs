@@ -6,7 +6,8 @@ namespace Tenuki.Server.Messaging;
 
 public sealed class IncomingMessageDispatcher(
     IMessageBroadcaster<LobbyMessage> lobby,
-    IMessageBroadcaster<GameMessage> games
+    IMessageBroadcaster<GameMessage> games,
+    IMessageBroadcaster<GameLobbyMessage> gameLobbies
 )
 {
     public async IAsyncEnumerable<ImmutableList<TId>> DispatchAsync<TId>(
@@ -26,6 +27,10 @@ public sealed class IncomingMessageDispatcher(
             {
                 OutgoingMessage<TId>.Game x => games.BroadcastAsync(x.Message, cancellationToken),
                 OutgoingMessage<TId>.Lobby x => lobby.BroadcastAsync(x.Message, cancellationToken),
+                OutgoingMessage<TId>.GameLobby x => gameLobbies.BroadcastAsync(
+                    x.Message,
+                    cancellationToken
+                ),
             };
 
             await broadcast;

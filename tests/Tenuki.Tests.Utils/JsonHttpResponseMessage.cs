@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Http.Headers;
 
 namespace Tenuki.Tests.Utils;
 
@@ -38,6 +39,7 @@ public sealed class JsonHttpResponseMessage<T>(HttpResponseMessage response) : I
 
     public HttpStatusCode StatusCode => response.StatusCode;
     public HttpContent Content => response.Content;
+    public HttpResponseHeaders Headers => response.Headers;
 
     public void Dispose() => response.Dispose();
 }

@@ -1,8 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Text.Json.Serialization;
-using Tenuki.Commons;
 
-namespace Tenuki.Services.Logic.GameLobby;
+namespace Tenuki.Commons;
 
 [JsonPolymorphic(InferClosedTypePolymorphism = true)]
 public closed record GameLobbyState(GameId GameId, GameLobbySettings Settings, long Revision)

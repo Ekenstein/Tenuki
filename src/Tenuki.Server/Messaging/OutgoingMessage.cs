@@ -10,4 +10,7 @@ public closed record OutgoingMessage<TId>(ImmutableList<TId> SourceIds)
 
     public sealed record Lobby(LobbyMessage Message, ImmutableList<TId> SourceIds)
         : OutgoingMessage<TId>(SourceIds);
+
+    public sealed record GameLobby(GameLobbyMessage Message, ImmutableList<TId> SourceIds)
+        : OutgoingMessage<TId>(SourceIds);
 }
